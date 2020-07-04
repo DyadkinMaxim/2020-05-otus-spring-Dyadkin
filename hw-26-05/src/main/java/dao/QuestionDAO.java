@@ -2,6 +2,12 @@ package dao;
 
 
 import dto.QuestionDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Service;
+
 
 import java.io.BufferedReader;
 
@@ -11,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+@PropertySource("classpath:config.properties")
+@Service
 public class QuestionDAO {
 
     /**
@@ -19,7 +27,8 @@ public class QuestionDAO {
     private final String pathCsvFile;
 
 
-    public QuestionDAO(String pathCsvFile) {
+
+    public QuestionDAO(@Value("${questions.path}") String pathCsvFile) {
         this.pathCsvFile = pathCsvFile;
 
     }
