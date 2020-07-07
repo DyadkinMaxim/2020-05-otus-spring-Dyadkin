@@ -1,25 +1,25 @@
-package dao;
+package testApp.dao;
 
 
-import dto.QuestionDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import testApp.dto.QuestionDTO;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 
 import java.io.BufferedReader;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+
 @PropertySource("classpath:config.properties")
 @Service
-public class QuestionDAO {
+public class QuestionDAOImpl implements QuestionDAO {
 
     /**
      * путь к CSV-файлу с вопросами и ответами
@@ -27,8 +27,7 @@ public class QuestionDAO {
     private final String pathCsvFile;
 
 
-
-    public QuestionDAO(@Value("${questions.path}") String pathCsvFile) {
+    public QuestionDAOImpl(@Value("${questions.path}") String pathCsvFile) {
         this.pathCsvFile = pathCsvFile;
 
     }
@@ -37,8 +36,10 @@ public class QuestionDAO {
         ArrayList<QuestionDTO> questionDTOs = new ArrayList<>();
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(
-                    pathCsvFile));
+            ClassLoader classLoader = getClass().getClassLoader();
+            File file = new File(classLoader.getResource(pathCsvFile).getFile());
+            BufferedReader reader = new BufferedReader(new FileReader(file
+            ));
             // считываем построчно
             String line;
             Scanner scanner;
@@ -69,6 +70,8 @@ public class QuestionDAO {
             }
             reader.close();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
         return questionDTOs;

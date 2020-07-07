@@ -1,4 +1,4 @@
-package dto;
+package testApp.dto;
 
 public class QuestionDTO {
     /**

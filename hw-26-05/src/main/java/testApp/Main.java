@@ -1,18 +1,17 @@
-import dao.QuestionDAO;
+package testApp;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import service.QuestionService;
+import testApp.service.QuestionServiceImpl;
 
 @Configuration
-@ComponentScan(basePackageClasses = Main.class)
+@ComponentScan
 public class Main {
     public static void main(String[] args) {
-
         AnnotationConfigApplicationContext context =
                 new AnnotationConfigApplicationContext(Main.class);
-        QuestionService questionService = context.getBean(QuestionService.class);
+        QuestionServiceImpl questionService = context.getBean(QuestionServiceImpl.class);
         questionService.printQuestions();
     }
-
 }

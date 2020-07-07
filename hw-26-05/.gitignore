@@ -19,3 +19,4 @@ buildNumber.properties
 
 # Build
 *.jar
+/src/main/java/META-INF/
