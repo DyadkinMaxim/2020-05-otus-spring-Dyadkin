@@ -1,5 +1,5 @@
-1, How many colors in rainbow?, 1; 2; 3; 7;, 7
-2, How many thousand COVIDs in Moscow today?, 100; 200; 500; 900;, 500
-3, What is the biggest planet?, Mercury; Earth; Jupiter; Mars;,  Jupiter
-4, How many calories in a banana?, 100; 200; 300; 400;, 200
-5, When wil the quarantine finish?, yesterday; today; tomorrow; 2021;, today
+1, How many colors in rainbow?, 1;2; 3; 7;,7
+2, How many thousand COVIDs in Moscow today?, 100; 200; 500; 900;,500
+3, What is the biggest planet?, 1 - Mercury; 2 - Earth; 3 - Jupiter; 4 - Mars;(enter only number - not text),3
+4, How many calories in a banana?, 100; 200; 300; 400;,200
+5, When wil the quarantine finish?, yesterday; today; tomorrow; 2021;,2021
