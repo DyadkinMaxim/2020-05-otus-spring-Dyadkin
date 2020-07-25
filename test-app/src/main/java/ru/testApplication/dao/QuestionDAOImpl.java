@@ -1,6 +1,8 @@
 package ru.testApplication.dao;
 
 
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 import ru.testApplication.config.YamlProps;
 import ru.testApplication.dto.QuestionDTO;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.Scanner;
 
 
-@RestController
+@Service
 public class QuestionDAOImpl implements QuestionDAO {
 
     /**
@@ -24,8 +26,11 @@ public class QuestionDAOImpl implements QuestionDAO {
      */
     private final YamlProps props;
 
-    public QuestionDAOImpl(YamlProps props) {
+    private final MessageSource messageSource;
+
+    public QuestionDAOImpl(YamlProps props, MessageSource messageSource) {
         this.props = props;
+        this.messageSource = messageSource;
 
     }
 
@@ -34,7 +39,7 @@ public class QuestionDAOImpl implements QuestionDAO {
 
         try {
             ClassLoader classLoader = getClass().getClassLoader();
-            final String pathCsvFile = props.getPath();
+            final String pathCsvFile = messageSource.getMessage("question.path", new String[]{}, props.getLocale());
             File file = new File(classLoader.getResource(pathCsvFile).getFile());
             BufferedReader reader = new BufferedReader(new FileReader(file
             ));

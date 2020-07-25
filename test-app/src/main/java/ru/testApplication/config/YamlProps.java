@@ -2,20 +2,14 @@ package ru.testApplication.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Locale;
+
 
 @ConfigurationProperties(prefix = "application")
 public class YamlProps {
 
-    private String path;
     private int limit;
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
+    private Locale locale;
 
     public int getLimit() {
         return limit;
@@ -23,5 +17,13 @@ public class YamlProps {
 
     public void setLimit(int limit) {
         this.limit = limit;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 }
