@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.Locale;
 
 
-@ConfigurationProperties(prefix = "application")
+@ConfigurationProperties("application")
 public class YamlProps {
 
     private int limit;
