@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.testApplication.config.YamlProps;
+import ru.testApplication.presentation.TestFacadeBean;
 import ru.testApplication.service.QuestionServiceImpl;
 
 @SpringBootApplication
@@ -13,7 +14,7 @@ import ru.testApplication.service.QuestionServiceImpl;
 public class Main {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(Main.class, args);
-        QuestionServiceImpl questionService = context.getBean(QuestionServiceImpl.class);
-        questionService.printQuestions();
+        TestFacadeBean testFacadeBean = context.getBean(TestFacadeBean.class);
+        testFacadeBean.startTest();
     }
 }

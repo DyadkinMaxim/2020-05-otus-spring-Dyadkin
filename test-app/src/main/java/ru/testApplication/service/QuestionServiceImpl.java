@@ -3,6 +3,7 @@ package ru.testApplication.service;
 
 import org.springframework.context.MessageSource;
 import org.springframework.shell.standard.ShellComponent;
+import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
 import ru.testApplication.config.YamlProps;
 import ru.testApplication.dto.AnswerDTO;
@@ -30,6 +31,7 @@ public class QuestionServiceImpl implements QuestionService{
         this.messageSource = messageSource;
     }
 
+    @ShellMethod(value = "Print question command", key = {"p", "print"})
     public void printQuestions() {
         List<QuestionDTO> questionDTOS = dao.getRecords();
 
@@ -51,6 +53,7 @@ public class QuestionServiceImpl implements QuestionService{
        answerDTO.setCorrectAnswers(correcctCounter);
     }
 
+    @ShellMethod(value = "Check answers command", key = {"ch", "check"})
     public void checkAnswers() {
         final int correcctCounter = answerDTO.getCorrectAnswers();
         final int correctAnswersAmount = props.getLimit();
