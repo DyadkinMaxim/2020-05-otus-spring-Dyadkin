@@ -53,7 +53,7 @@ public class BookServiceImpl implements BookService {
         System.out.println("Введите Жанр книги: ");
         String bookStyle = scanner.nextLine();
         BookDTO bookDTO = new BookDTO(null, bookName, bookAuthor, bookStyle);
-        bookDAO.addBook(bookDTO);
+        //bookDAO.addBook(bookDTO);
     }
 
     @Override

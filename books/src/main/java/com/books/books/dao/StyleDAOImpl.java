@@ -21,13 +21,16 @@ public class StyleDAOImpl implements StyleDAO{
 
     @Override
     public List<StyleDTO> getStyles(){
-        final String SELECT_STYLES = "SELECT * FROM styles";
+        final String SELECT_STYLES = "SELECT id, style FROM styles";
         return namedParameterJdbcTemplate.query(SELECT_STYLES, new StyleMapper());
     }
 
     @Override
     public List<BookDTO> getBooksByStyle(String name){
-        final String SELECT_BOOKS_BY_STYLE = "SELECT * FROM BOOKS WHERE style = :name";
+        final String SELECT_BOOKS_BY_STYLE = "SELECT styles.id, books.book, authors.author, styles.style FROM styles " +
+                "left join books on books.style_id = styles.id " +
+                "left join authors on authors.id = books.author_id " +
+                "WHERE style = :name";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", name);
         return  namedParameterJdbcTemplate.query(SELECT_BOOKS_BY_STYLE, params, new BookDAOImpl.BookMapper());
@@ -35,7 +38,10 @@ public class StyleDAOImpl implements StyleDAO{
 
     @Override
     public List<AuthorDTO> getAuthorsByStyle(String style){
-        final String SELECT_AUTHORS_BY_STYLE = "SELECT id, author FROM BOOKS WHERE style = :style";
+        final String SELECT_AUTHORS_BY_STYLE = "SELECT authors.id, author FROM authors " +
+                "left join books on books.author_id = authors.id " +
+                "left join styles on books.style_id = styles.id " +
+                "WHERE style = :style";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("style", style);
         return  namedParameterJdbcTemplate.query(SELECT_AUTHORS_BY_STYLE, params, new AuthorDAOImpl.AuthorMapper());

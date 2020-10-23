@@ -47,16 +47,16 @@ class BookDaoTest {
         assertThat(bookByName).hasFieldOrPropertyWithValue("style", "приключения");
     }
 
-    @Test
-    @DisplayName("добавлнение новой книги")
-    public void addBook() {
-        final BookDTO newBook = new BookDTO(null, "The Lord of the Rings", "John Ronald Reuel Tolkien", "novel");
-        long bookId = bookDAOImpl.addBook(newBook);
-        BookDTO actual = bookDAOImpl.getBookById(bookId);
-        assertThat(actual.getName()).isEqualTo(newBook.getName());
-        assertThat(actual.getAuthor()).isEqualTo(newBook.getAuthor());
-        assertThat(actual.getStyle()).isEqualTo(newBook.getStyle());
-    }
+//    @Test
+//    @DisplayName("добавлнение новой книги")
+//    public void addBook() {
+//        final BookDTO newBook = new BookDTO(null, "The Lord of the Rings", "John Ronald Reuel Tolkien", "novel");
+//        long bookId = bookDAOImpl.addBook(newBook);
+//        BookDTO actual = bookDAOImpl.getBookById(bookId);
+//        assertThat(actual.getName()).isEqualTo(newBook.getName());
+//        assertThat(actual.getAuthor()).isEqualTo(newBook.getAuthor());
+//        assertThat(actual.getStyle()).isEqualTo(newBook.getStyle());
+//    }
 
     @Test
     @DisplayName("удаление книги")
