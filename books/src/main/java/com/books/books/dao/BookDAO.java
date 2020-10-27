@@ -14,7 +14,7 @@ public interface BookDAO {
     @Nullable
     BookDTO getBookById(long id);
 
-    long addBook(BookDTO bookDTO);
+    Long addBook(BookDTO bookDTO);
 
     void deleteBook(long id);
 

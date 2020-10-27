@@ -8,6 +8,10 @@ import java.util.List;
 
 public interface AuthorDAO {
 
+    Long addAuthor(String name);
+
+    Long getAuthorByName(String name);
+
     List<AuthorDTO> getAuthors();
 
     List<BookDTO> getAuthorBooks(String name);

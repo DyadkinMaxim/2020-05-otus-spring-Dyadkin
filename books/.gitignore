@@ -20,3 +20,4 @@ buildNumber.properties
 # Build
 *.jar
 /src/main/java/META-INF/
+/spring-shell.log

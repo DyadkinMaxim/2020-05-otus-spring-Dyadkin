@@ -2,7 +2,6 @@ package com.books.books.service;
 
 import com.books.books.dao.BookDAOImpl;
 import com.books.books.dto.BookDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
@@ -53,7 +52,8 @@ public class BookServiceImpl implements BookService {
         System.out.println("Введите Жанр книги: ");
         String bookStyle = scanner.nextLine();
         BookDTO bookDTO = new BookDTO(null, bookName, bookAuthor, bookStyle);
-        bookDAO.addBook(bookDTO);
+        Long bookId = bookDAO.addBook(bookDTO);
+        System.out.println("Добавлена книга с id: " + bookId);
     }
 
     @Override
@@ -79,5 +79,6 @@ public class BookServiceImpl implements BookService {
         System.out.println("Введите ID удаляемой книги: ");
         long bookID = scanner.nextLong();
         bookDAO.deleteBook(bookID);
+        System.out.println("Удалена книга с ID : " + bookID);
     }
 }

@@ -40,7 +40,7 @@ public class AuthorServiceImpl implements AuthorService{
         String authorName = scanner.nextLine();
         List<BookDTO> booksByAuthor =  authorDAO.getAuthorBooks(authorName);
         for (BookDTO bookDTO : booksByAuthor) {
-            String bookText =  "Название: " + bookDTO.getName() + "; \n Автор: " + bookDTO.getAuthor()+ "; \n Жанр:" + bookDTO.getStyle();
+            String bookText =  " Название: " + bookDTO.getName() + "; \n Автор: " + bookDTO.getAuthor()+ "; \n Жанр:" + bookDTO.getStyle();
             System.out.println(bookText);
         }
     }
