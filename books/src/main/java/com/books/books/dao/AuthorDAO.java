@@ -10,7 +10,7 @@ public interface AuthorDAO {
 
     Long addAuthor(String name);
 
-    Long getAuthorByName(String name);
+    Long getAuthorIdByName(String name);
 
     List<AuthorDTO> getAuthors();
 
