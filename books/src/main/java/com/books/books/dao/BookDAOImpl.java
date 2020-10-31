@@ -75,7 +75,7 @@ public class BookDAOImpl implements BookDAO {
         insert.setColumnNames(columns);
         insert.setTableName("books");
 
-        final Long authorById = authorDAO.getAuthorByName(bookDTO.getAuthor());
+        final Long authorById = authorDAO.getAuthorIdByName(bookDTO.getAuthor());
         final Long styleById = styleDAO.getStyleByName(bookDTO.getStyle());
 
         if(authorById == null) {

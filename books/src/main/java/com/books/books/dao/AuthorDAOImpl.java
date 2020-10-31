@@ -52,7 +52,7 @@ public class AuthorDAOImpl implements AuthorDAO{
     }
 
     @Override
-    public Long getAuthorByName(String name){
+    public Long getAuthorIdByName(String name){
         final String SELECT_AUTHOR_BY_NAME = "select id from authors where author = :name";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", name);
