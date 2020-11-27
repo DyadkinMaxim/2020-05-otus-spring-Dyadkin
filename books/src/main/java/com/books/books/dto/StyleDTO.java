@@ -1,7 +1,5 @@
 package com.books.books.dto;
 
-import java.util.List;
-
 public class StyleDTO {
 
     private long id;

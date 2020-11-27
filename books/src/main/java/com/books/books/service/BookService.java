@@ -1,15 +1,19 @@
 package com.books.books.service;
 
 
+import com.books.books.models.Book;
+
 public interface BookService {
 
     void printBooks();
 
-    void printBookByName();
+    void printBookById();
 
-    void addBook();
+    void save();
 
-    void updateBook();
+    void update();
 
-    void deleteBook();
+    void delete();
+
+    void printBookInConsole(Book book);
 }

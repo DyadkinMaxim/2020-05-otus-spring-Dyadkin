@@ -1,4 +1,4 @@
-package com.books.books;
+package com.books.books.dao;
 
 import com.books.books.dao.AuthorDAOImpl;
 import com.books.books.dao.BookDAOImpl;
@@ -6,12 +6,9 @@ import com.books.books.dao.StyleDAOImpl;
 import com.books.books.dto.BookDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
