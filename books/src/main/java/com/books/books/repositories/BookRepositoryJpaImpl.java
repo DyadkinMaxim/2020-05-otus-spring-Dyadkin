@@ -17,13 +17,25 @@ public class BookRepositoryJpaImpl implements BookRepositoryJpa {
 
     @Transactional
     @Override
-    public Optional<Long> save(Book book) {
-        try {
-            em.persist(book);
-        } catch (PersistenceException e) {
-            System.out.println("Не удалось добавить книгу");
+    public Optional<Book> save(Book book) {
+        if (book.getId() == 0) {
+            try {
+                em.persist(book);
+
+            } catch (PersistenceException e) {
+                System.out.println("Не удалось добавить книгу");
+            }
+            return Optional.ofNullable(book);
+        } else {
+            Book mergeBook = new Book();
+            try {
+                mergeBook = em.merge(book);
+
+            } catch (PersistenceException e) {
+                System.out.println("Не удалось добавить книгу");
+            }
+            return Optional.ofNullable(mergeBook);
         }
-        return Optional.ofNullable(book.getId());
     }
 
     @Transactional(readOnly = true)

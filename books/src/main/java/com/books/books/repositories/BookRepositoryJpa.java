@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookRepositoryJpa {
-    Optional<Long> save(Book book);
+    Optional<Book> save(Book book);
 
     List<Book> findAll();
 

@@ -9,7 +9,10 @@ import com.books.books.repositories.CommentRepositoryJpa;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +21,9 @@ import java.util.Scanner;
 @Service
 @ShellComponent
 public class BookServiceImpl implements BookService {
+
+    @PersistenceContext
+    EntityManager em;
 
     private final BookRepositoryJpa bookRepository;
     private final CommentRepositoryJpa commentRepository;
@@ -116,7 +122,8 @@ public class BookServiceImpl implements BookService {
             counter++;
         }
         Book book = new Book(0, bookName, bookAuthor, bookStyle, null);
-        long bookId = bookRepository.save(book).orElse(0L);
+        Book saveBook = bookRepository.save(book).orElse(new Book());
+        long bookId = saveBook.getId();
         if (bookId != 0) {
             for (Comment comment : bookComments) {
                 comment.setBookId(bookId);
@@ -130,6 +137,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @ShellMethod(value = "Update book", key = {"b4"})
+    @Transactional
     public void update() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите ID изменяемой книги: ");
@@ -146,12 +154,17 @@ public class BookServiceImpl implements BookService {
             System.out.println("Название книги не может быть пустым");
             return;
         }
-        Book book = new Book(bookId, bookName, null, null, null);
-        int resultSuccess = bookRepository.updateBookName(book);
-        if (resultSuccess != 0) {
-            Book newBook = bookRepository.findById(bookId).orElse(new Book());
-            printBookInConsole(newBook);
-        } else {
+        Book book = bookRepository.findById(bookId).orElse(new Book());
+        if (book.getId() != 0) {
+            em.detach(book);
+            book.setBookName(bookName);
+            bookRepository.save(book);
+            if (book.getId() != 0) {
+                System.out.println("Изменена книга: ");
+                printBookInConsole(book);
+            }
+        }
+        else {
             System.out.println("Не найдена книга с id: " + book.getId());
         }
     }
