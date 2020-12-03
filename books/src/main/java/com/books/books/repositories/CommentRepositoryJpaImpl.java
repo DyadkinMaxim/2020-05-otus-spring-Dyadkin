@@ -26,7 +26,7 @@ public class CommentRepositoryJpaImpl implements CommentRepositoryJpa {
         return Optional.ofNullable(comment.getId());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<Comment> findAll() {
         TypedQuery<Comment> query = em.createQuery("select c from Comment c", Comment.class);

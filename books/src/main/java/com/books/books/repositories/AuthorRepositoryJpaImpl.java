@@ -27,7 +27,7 @@ public class AuthorRepositoryJpaImpl implements AuthorRepositoryJpa {
         return Optional.ofNullable(author.getId());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<Author> findAll() {
         TypedQuery<Author> query = em.createQuery("select a from Author a", Author.class);
@@ -40,7 +40,7 @@ public class AuthorRepositoryJpaImpl implements AuthorRepositoryJpa {
         return Optional.ofNullable(em.find(Author.class, id));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public Author findByName(String name) {
         TypedQuery<Author> query = em.createQuery("select a from Author a where a.authorName = :name", Author.class);
@@ -52,7 +52,7 @@ public class AuthorRepositoryJpaImpl implements AuthorRepositoryJpa {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<Book> findBooksByAuthor(String authorName) {
         TypedQuery<Book> query = em.createQuery("select b from Book b where b.author = :author", Book.class);
@@ -65,7 +65,7 @@ public class AuthorRepositoryJpaImpl implements AuthorRepositoryJpa {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<Style> findStylesByAuthor(String authorName) {
         TypedQuery<Style> query = em.createQuery("select b.style from Book b " +

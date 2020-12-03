@@ -34,6 +34,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Print all books", key = {"b1"})
     public void printBooks() {
         List<Book> books = bookRepository.findAll();
@@ -43,6 +44,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Print book by id", key = {"b2"})
     public void printBookById() {
         Scanner scanner = new Scanner(System.in);
@@ -63,6 +65,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Add new book", key = {"b3"})
     public void save() {
         Scanner scanner = new Scanner(System.in);
@@ -170,6 +173,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Delete book", key = {"b5"})
     public void delete() {
         Scanner scanner = new Scanner(System.in);
@@ -195,7 +199,7 @@ public class BookServiceImpl implements BookService {
                 "; \n Название: " + book.getBookName() +
                 "; \n Автор: " + book.getAuthor().getAuthorName() +
                 "; \n Жанр:" + book.getStyle().getStyleName());
-        if (!book.getComment().isEmpty()) {
+        if (!Objects.equals(book.getComment(), null)) {
             int i = 0;
             for (Comment bookComment : book.getComment()) {
                 i++;

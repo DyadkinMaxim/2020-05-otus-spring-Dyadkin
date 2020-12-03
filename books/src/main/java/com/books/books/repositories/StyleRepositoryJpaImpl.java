@@ -27,7 +27,7 @@ public class StyleRepositoryJpaImpl implements StyleRepositoryJpa {
         return Optional.ofNullable(style.getId());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<Style> findAll() {
         TypedQuery<Style> query = em.createQuery("select s from Style s", Style.class);
@@ -40,7 +40,7 @@ public class StyleRepositoryJpaImpl implements StyleRepositoryJpa {
         return Optional.ofNullable(em.find(Style.class, id));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public Style findByName(String name) {
         TypedQuery<Style> query = em.createQuery("select s from Style s where s.styleName = :name", Style.class);
@@ -52,7 +52,7 @@ public class StyleRepositoryJpaImpl implements StyleRepositoryJpa {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<Book> findBooksByStyle(String styleName) {
         TypedQuery<Book> query = em.createQuery("select b from Book b where b.style = :style", Book.class);
@@ -65,7 +65,7 @@ public class StyleRepositoryJpaImpl implements StyleRepositoryJpa {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<Author> findAuthorsByStyle(String styleName) {
         TypedQuery<Author> query = em.createQuery("select b.author from Book b " +

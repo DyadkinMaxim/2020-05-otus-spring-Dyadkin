@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -38,26 +41,23 @@ public class BookRepositoryJpaImpl implements BookRepositoryJpa {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<Book> findAll() {
-        EntityGraph<?> authorEntityGraph = em.getEntityGraph("author-entity-graph");
-        EntityGraph<?> styleEntityGraph = em.getEntityGraph("style-entity-graph");
-        EntityGraph<?> commentEntityGraph = em.getEntityGraph("comment-entity-graph");
         TypedQuery<Book> query = em.createQuery("select b from Book b", Book.class);
-        query.setHint("javax.persistence.fetchgraph", authorEntityGraph);
-        query.setHint("javax.persistence.fetchgraph", styleEntityGraph);
-        query.setHint("javax.persistence.fetchgraph", commentEntityGraph);
         return query.getResultList();
     }
 
     @Transactional(readOnly = true)
     @Override
     public Optional<Book> findById(long id) {
-        return Optional.ofNullable(em.find(Book.class, id));
+        EntityGraph<?> commentGraph = em.getEntityGraph("comment-entity-graph");
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("javax.persistence.fetchgraph", commentGraph);
+        return Optional.ofNullable(em.find(Book.class, id, properties));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public Book findByName(String name) {
         TypedQuery<Book> query = em.createQuery("select b from Book b where b.bookName = :name", Book.class);
