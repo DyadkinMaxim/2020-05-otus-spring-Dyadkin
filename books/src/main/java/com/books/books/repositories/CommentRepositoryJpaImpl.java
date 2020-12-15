@@ -1,5 +1,6 @@
 package com.books.books.repositories;
 
+import com.books.books.models.Book;
 import com.books.books.models.Comment;
 import org.springframework.stereotype.Repository;
 
@@ -41,29 +42,14 @@ public class CommentRepositoryJpaImpl implements CommentRepositoryJpa {
 
     @Transactional
     @Override
-    public int updateCommentText(Comment comment) {
-        Query query = em.createQuery("update Comment c set " +
-                "c.commentText = :commentText " +
-                " where c.id = :id");
-        query.setParameter("commentText", comment.getCommentText());
-        query.setParameter("id", comment.getId());
-        int resultSuccess = 0;
-        try {
-            resultSuccess = query.executeUpdate();
-        } catch (PersistenceException e) {
-            System.out.println("Не удалось изменить комментарий");
-        }
-        return resultSuccess;
-    }
-
-    @Transactional
-    @Override
     public int deleteById(long id) {
-        Query query = em.createQuery("delete from Comment c where c.id = :id");
-        query.setParameter("id", id);
+        Comment commentById = findById(id).orElse(new Comment());
         int resultSuccess = 0;
         try {
-            resultSuccess = query.executeUpdate();
+            em.remove(commentById);
+            em.flush();
+            em.clear();
+            resultSuccess = 1;
         } catch (PersistenceException e) {
             System.out.println("Не удалось удалить комментарий");
         }

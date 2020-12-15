@@ -1,6 +1,7 @@
 package com.books.books.service;
 
 
+import com.books.books.models.Author;
 import com.books.books.models.Book;
 import com.books.books.models.Comment;
 import com.books.books.repositories.BookRepositoryJpa;
@@ -8,6 +9,7 @@ import com.books.books.repositories.CommentRepositoryJpa;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -92,6 +94,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Update comment", key = {"c4"})
     public void update() {
         Scanner scanner = new Scanner(System.in);
@@ -109,14 +112,14 @@ public class CommentServiceImpl implements CommentService {
             System.out.println("Комментарий не может быть пустым");
             return;
         }
-        Comment comment = new Comment(commentId, commentText, 0);
-        int resultSuccess = commentRepository.updateCommentText(comment);
-        if (resultSuccess != 0) {
+        Comment updatedComment = commentRepository.findById(commentId).orElse(new Comment());
+        if (updatedComment.getId() != 0) {
+            updatedComment.setCommentText(commentText);
             Comment newComment = commentRepository.findById(commentId).orElse(new Comment());
             System.out.println("Изменен комментарий: \n" +
                     " ID: " + newComment.getId() + "; \n Комментарий: " + newComment.getCommentText());
         } else {
-            System.out.println("Не найден комментарий с id: " + comment.getId());
+            System.out.println("Не найден комментарий с id: " + commentId);
         }
     }
 

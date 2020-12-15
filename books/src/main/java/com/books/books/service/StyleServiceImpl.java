@@ -2,11 +2,13 @@ package com.books.books.service;
 
 import com.books.books.models.Author;
 import com.books.books.models.Book;
+import com.books.books.models.Comment;
 import com.books.books.models.Style;
 import com.books.books.repositories.StyleRepositoryJpa;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -80,6 +82,7 @@ public class StyleServiceImpl implements StyleService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Update style", key = {"s4"})
     public void update() {
         Scanner scanner = new Scanner(System.in);
@@ -97,14 +100,14 @@ public class StyleServiceImpl implements StyleService {
             System.out.println("Жанр не может быть пустым");
             return;
         }
-        Style style = new Style(styleId, styleName);
-        int resultSuccess = styleRepository.update(style);
-        if (resultSuccess != 0) {
+        Style updatedStyle = styleRepository.findById(styleId).orElse(new Style());
+        if (updatedStyle.getId() != 0) {
+            updatedStyle.setStyleName(styleName);
             Style newStyle = styleRepository.findById(styleId).orElse(new Style());
             System.out.println("Изменен жанр: \n" +
                     " ID: " + newStyle.getId() + "; \n Жанр: " + newStyle.getStyleName());
         } else {
-            System.out.println("Не найден жанр с id: " + style.getId());
+            System.out.println("Не найден жанр с id: " + styleId);
         }
     }
 

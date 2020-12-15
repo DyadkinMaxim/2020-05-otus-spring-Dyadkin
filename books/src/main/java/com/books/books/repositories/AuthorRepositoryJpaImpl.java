@@ -81,27 +81,14 @@ public class AuthorRepositoryJpaImpl implements AuthorRepositoryJpa {
 
     @Transactional
     @Override
-    public int update(Author author) {
-        Query query = em.createQuery("update Author a set a.authorName = :authorName where a.id = :id");
-        query.setParameter("authorName", author.getAuthorName());
-        query.setParameter("id", author.getId());
-        int resultSuccess = 0;
-        try {
-            resultSuccess = query.executeUpdate();
-        } catch (PersistenceException e) {
-            System.out.println("Не удалось изменить автора");
-        }
-        return resultSuccess;
-    }
-
-    @Transactional
-    @Override
     public int deleteById(long id) {
-        Query query = em.createQuery("delete from Author a where a.id = :id");
-        query.setParameter("id", id);
         int resultSuccess = 0;
         try {
-            resultSuccess = query.executeUpdate();
+            Author authorById = findById(id).orElse(new Author());
+            em.remove(authorById);
+            em.flush();
+            em.clear();
+            resultSuccess = 1;
         } catch (PersistenceException e) {
             System.out.println("Не удалось удалить автора");
         }

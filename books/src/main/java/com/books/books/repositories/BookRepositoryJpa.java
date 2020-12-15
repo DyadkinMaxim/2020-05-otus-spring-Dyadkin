@@ -14,8 +14,6 @@ public interface BookRepositoryJpa {
 
     Book findByName(String name);
 
-    int updateBookName(Book book);
-
     int deleteById(long id);
 
 }

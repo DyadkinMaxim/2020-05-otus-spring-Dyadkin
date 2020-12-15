@@ -12,7 +12,5 @@ public interface CommentRepositoryJpa {
 
     Optional<Comment> findById(long id);
 
-    int updateCommentText(Comment comment);
-
     int deleteById(long id);
 }

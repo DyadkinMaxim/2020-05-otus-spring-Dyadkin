@@ -86,19 +86,6 @@ class BookRepositoryTest {
         assertThat(actualBook).isEqualToComparingFieldByField(firstBook);
     }
 
-    @DisplayName(" должен изменять имя заданной книги")
-    @Test
-    void shouldUpdateBookName() {
-        val firstBook = em.find(Book.class, FIRST_BOOK_ID);
-        String oldName = firstBook.getBookName();
-        em.detach(firstBook);
-        Book book = new Book(FIRST_BOOK_ID, UPDATED_BOOK_NAME, null, null, null);
-        bookRepository.updateBookName(book);
-        val updatedBook = em.find(Book.class, FIRST_BOOK_ID);
-
-        assertThat(updatedBook.getBookName()).isNotEqualTo(oldName).isEqualTo(UPDATED_BOOK_NAME);
-    }
-
     @DisplayName(" должен удалять заданную книгу по ее id")
     @Test
     void shouldDeleteBook() {

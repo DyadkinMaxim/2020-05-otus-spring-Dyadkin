@@ -8,7 +8,10 @@ import com.books.books.repositories.BookRepositoryJpa;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -16,6 +19,9 @@ import java.util.Scanner;
 @Service
 @ShellComponent
 public class AuthorServiceImpl implements AuthorService {
+
+    @PersistenceContext
+    EntityManager em;
 
     private final AuthorRepositoryJpa authorRepository;
     private final BookRepositoryJpa bookRepository;
@@ -83,6 +89,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Update author", key = {"a4"})
     public void update() {
         Scanner scanner = new Scanner(System.in);
@@ -100,14 +107,14 @@ public class AuthorServiceImpl implements AuthorService {
             System.out.println("Автор не может быть пустым");
             return;
         }
-        Author author = new Author(authorId, authorName);
-        int resultSuccess = authorRepository.update(author);
-        if (resultSuccess != 0) {
+        Author  updatedAuthor = authorRepository.findById(authorId).orElse(new Author());
+        if (updatedAuthor.getId() != 0) {
+            updatedAuthor.setAuthorName(authorName);
             Author newAuthor = authorRepository.findById(authorId).orElse(new Author());
             System.out.println("Изменен автор: \n" +
                     " ID: " + newAuthor.getId() + "; \n Автор: " + newAuthor.getAuthorName());
         } else {
-            System.out.println("Не найден автор с id: " + author.getId());
+            System.out.println("Не найден автор с id: " + authorId);
         }
     }
 

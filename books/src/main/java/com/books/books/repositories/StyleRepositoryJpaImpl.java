@@ -3,6 +3,7 @@ package com.books.books.repositories;
 
 import com.books.books.models.Author;
 import com.books.books.models.Book;
+import com.books.books.models.Comment;
 import com.books.books.models.Style;
 import org.springframework.stereotype.Repository;
 
@@ -81,27 +82,14 @@ public class StyleRepositoryJpaImpl implements StyleRepositoryJpa {
 
     @Transactional
     @Override
-    public int update(Style style) {
-        Query query = em.createQuery("update Style s set s.styleName = :styleName where s.id = :id");
-        query.setParameter("styleName", style.getStyleName());
-        query.setParameter("id", style.getId());
-        int resultSuccess = 0;
-        try {
-            resultSuccess = query.executeUpdate();
-        } catch (PersistenceException e) {
-            System.out.println("Не удалось изменить жанр");
-        }
-        return resultSuccess;
-    }
-
-    @Transactional
-    @Override
     public int deleteById(long id) {
-        Query query = em.createQuery("delete from Style s where s.id = :id");
-        query.setParameter("id", id);
+        Style styleById = findById(id).orElse(new Style());
         int resultSuccess = 0;
         try {
-            resultSuccess = query.executeUpdate();
+            em.remove(styleById);
+            em.flush();
+            em.clear();
+            resultSuccess = 1;
         } catch (PersistenceException e) {
             System.out.println("Не удалось удалить жанр");
         }

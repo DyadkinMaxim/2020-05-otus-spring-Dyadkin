@@ -21,7 +21,5 @@ public interface AuthorRepositoryJpa {
 
     List<Style> findStylesByAuthor(String authorName);
 
-    int update(Author author);
-
     int deleteById(long id);
 }

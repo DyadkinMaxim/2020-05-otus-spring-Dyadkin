@@ -1,9 +1,14 @@
 package com.books.books.repositories;
 
 import com.books.books.models.Book;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -41,12 +46,16 @@ public class BookRepositoryJpaImpl implements BookRepositoryJpa {
         }
     }
 
-    @Transactional
     @Override
     public List<Book> findAll() {
-        TypedQuery<Book> query = em.createQuery("select b from Book b", Book.class);
-        return query.getResultList();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Book> bookCriteriaQuery = cb.createQuery(Book.class);
+        Root<Book> rootEntry = bookCriteriaQuery.from(Book.class);
+        CriteriaQuery<Book> all = bookCriteriaQuery.select(rootEntry);
+        TypedQuery<Book> allQuery = em.createQuery(all);
+        return allQuery.getResultList();
     }
+
 
     @Transactional(readOnly = true)
     @Override
@@ -54,6 +63,7 @@ public class BookRepositoryJpaImpl implements BookRepositoryJpa {
         EntityGraph<?> commentGraph = em.getEntityGraph("comment-entity-graph");
         Map<String, Object> properties = new HashMap<>();
         properties.put("javax.persistence.fetchgraph", commentGraph);
+
         return Optional.ofNullable(em.find(Book.class, id, properties));
     }
 
@@ -71,29 +81,14 @@ public class BookRepositoryJpaImpl implements BookRepositoryJpa {
 
     @Transactional
     @Override
-    public int updateBookName(Book book) {
-        Query query = em.createQuery("update Book b set" +
-                " b.bookName = :bookName" +
-                " where b.id = :id");
-        query.setParameter("bookName", book.getBookName());
-        query.setParameter("id", book.getId());
-        int resultSuccess = 0;
-        try {
-            resultSuccess = query.executeUpdate();
-        } catch (PersistenceException e) {
-            System.out.println("Не удалось изменить книгу");
-        }
-        return resultSuccess;
-    }
-
-    @Transactional
-    @Override
     public int deleteById(long id) {
-        Query query = em.createQuery("delete from Book b where b.id = :id");
-        query.setParameter("id", id);
+        Book bookById = findById(id).orElse(new Book());
         int resultSuccess = 0;
         try {
-            resultSuccess = query.executeUpdate();
+            em.remove(bookById);
+            em.flush();
+            em.clear();
+            resultSuccess = 1;
         } catch (PersistenceException e) {
             System.out.println("Не удалось удалить книгу");
         }

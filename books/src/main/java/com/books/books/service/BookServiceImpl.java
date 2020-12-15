@@ -6,6 +6,7 @@ import com.books.books.models.Comment;
 import com.books.books.models.Style;
 import com.books.books.repositories.BookRepositoryJpa;
 import com.books.books.repositories.CommentRepositoryJpa;
+import org.hibernate.SessionFactory;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,9 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @ShellMethod(value = "Print all books", key = {"b1"})
     public void printBooks() {
+        SessionFactory sessionFactory = em.getEntityManagerFactory()
+                .unwrap(SessionFactory.class);
+        sessionFactory.getStatistics().setStatisticsEnabled(true);
         List<Book> books = bookRepository.findAll();
         for (Book book : books) {
             printBookInConsole(book);
@@ -157,18 +161,13 @@ public class BookServiceImpl implements BookService {
             System.out.println("Название книги не может быть пустым");
             return;
         }
-        Book book = bookRepository.findById(bookId).orElse(new Book());
-        if (book.getId() != 0) {
-            em.detach(book);
-            book.setBookName(bookName);
-            bookRepository.save(book);
-            if (book.getId() != 0) {
-                System.out.println("Изменена книга: ");
-                printBookInConsole(book);
-            }
-        }
-        else {
-            System.out.println("Не найдена книга с id: " + book.getId());
+        Book updatedBook = bookRepository.findById(bookId).orElse(new Book());
+        if (updatedBook.getId() != 0) {
+            updatedBook.setBookName(bookName);
+            Book newBook = bookRepository.findById(bookId).orElse(new Book());
+           printBookInConsole(newBook);
+        } else {
+            System.out.println("Не найдена книга с id: " + bookId);
         }
     }
 
