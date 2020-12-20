@@ -28,7 +28,7 @@ class BookRepositoryTest {
     private static final long FIRST_BOOK_ID = 1L;
     private static final String FIRST_BOOK_NAME = "Белый клык";
     private static final String NEW_BOOK_STYLE = "newStyle";
-    private static final String NEW_BOOK_AUTHOR = "newStyle";
+    private static final String NEW_BOOK_AUTHOR = "newAuthor";
     private static final String NEW_BOOK_COMMENT = "newComment";
     private static final String NEW_BOOK_NAME = "newBookName";
     private static final String UPDATED_BOOK_NAME = "updatedBookName";
@@ -56,18 +56,16 @@ class BookRepositoryTest {
         assertThat(books).isNotNull().hasSize(EXPECTED_NUMBER_OF_BOOKS);
     }
 
-    @DisplayName(" должен корректно сохранять всю информацию о студенте")
+    @DisplayName(" должен корректно сохранять всю информацию о книге")
     @Test
     void shouldSaveAllBookInfo() {
         val style = new Style(0, NEW_BOOK_STYLE);
         val author = new Author(0, NEW_BOOK_AUTHOR);
-
-        val comment = new Comment(0, NEW_BOOK_COMMENT, 1);
+        val newBook = new Book(0, NEW_BOOK_NAME, author, style, null);
+        val comment = new Comment(0, NEW_BOOK_COMMENT, newBook);
         val comments = Collections.singletonList(comment);
+        newBook.setComment(comments);
 
-
-
-        val newBook = new Book(0, NEW_BOOK_NAME, author, style, comments);
         bookRepository.save(newBook);
         assertThat(newBook.getId()).isGreaterThan(0);
 

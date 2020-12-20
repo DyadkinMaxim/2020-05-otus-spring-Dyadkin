@@ -38,17 +38,13 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @ShellMethod(value = "Print all books", key = {"b1"})
     public void printBooks() {
-        SessionFactory sessionFactory = em.getEntityManagerFactory()
-                .unwrap(SessionFactory.class);
-        sessionFactory.getStatistics().setStatisticsEnabled(true);
         List<Book> books = bookRepository.findAll();
-        for (Book book : books) {
-            printBookInConsole(book);
-        }
+        printAllBooksInConsole(books);
+
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     @ShellMethod(value = "Print book by id", key = {"b2"})
     public void printBookById() {
         Scanner scanner = new Scanner(System.in);
@@ -133,7 +129,7 @@ public class BookServiceImpl implements BookService {
         long bookId = saveBook.getId();
         if (bookId != 0) {
             for (Comment comment : bookComments) {
-                comment.setBookId(bookId);
+                comment.setBook(book);
                 commentRepository.save(comment);
             }
             Book newBook = bookRepository.findById(bookId).orElse(new Book());
@@ -189,6 +185,19 @@ public class BookServiceImpl implements BookService {
             System.out.println("Удалена книга с Id : " + bookId);
         } else {
             System.out.println("Не найдена книга с id: " + bookId);
+        }
+    }
+
+    public void printAllBooksInConsole(List<Book> books) {
+        for (Book book : books) {
+            List<String> bookText = new ArrayList<>();
+            bookText.add("ID: " + book.getId() +
+                    "; \n Название: " + book.getBookName() +
+                    "; \n Автор: " + book.getAuthor().getAuthorName() +
+                    "; \n Жанр:" + book.getStyle().getStyleName());
+            for (String bookForPrint : bookText) {
+                System.out.println(bookForPrint);
+            }
         }
     }
 

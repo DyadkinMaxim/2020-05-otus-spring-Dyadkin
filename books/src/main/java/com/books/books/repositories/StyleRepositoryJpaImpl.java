@@ -9,7 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -17,7 +20,6 @@ public class StyleRepositoryJpaImpl implements StyleRepositoryJpa {
     @PersistenceContext
     EntityManager em;
 
-    @Transactional
     @Override
     public Optional<Long> save(Style style) {
         try {
@@ -28,20 +30,17 @@ public class StyleRepositoryJpaImpl implements StyleRepositoryJpa {
         return Optional.ofNullable(style.getId());
     }
 
-    @Transactional
     @Override
     public List<Style> findAll() {
         TypedQuery<Style> query = em.createQuery("select s from Style s", Style.class);
         return query.getResultList();
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Optional<Style> findById(long id) {
         return Optional.ofNullable(em.find(Style.class, id));
     }
 
-    @Transactional
     @Override
     public Style findByName(String name) {
         TypedQuery<Style> query = em.createQuery("select s from Style s where s.styleName = :name", Style.class);
@@ -53,43 +52,49 @@ public class StyleRepositoryJpaImpl implements StyleRepositoryJpa {
         }
     }
 
-    @Transactional
     @Override
     public List<Book> findBooksByStyle(String styleName) {
-        TypedQuery<Book> query = em.createQuery("select b from Book b where b.style = :style", Book.class);
+        TypedQuery<Book> query = em.createQuery("select b from Book b", Book.class);
         try {
-            Style styleByName = findByName(styleName);
-            query.setParameter("style", styleByName);
-            return query.getResultList();
+            List<Book> books = query.getResultList();
+            List<Book> booksByStyle = new ArrayList<>();
+            for(Book bookByStyle : books){
+                if(Objects.equals(bookByStyle.getStyle().getStyleName(), styleName)){
+                    booksByStyle.add(bookByStyle);
+                }
+            }
+            return booksByStyle;
         } catch (PersistenceException e) {
             return null;
         }
     }
 
-    @Transactional
     @Override
     public List<Author> findAuthorsByStyle(String styleName) {
-        TypedQuery<Author> query = em.createQuery("select b.author from Book b " +
-                "where b.style = :style", Author.class);
+        TypedQuery<Book> query = em.createQuery("select b from Book b", Book.class);
         try {
-            Style styleByName = findByName(styleName);
-            query.setParameter("style", styleByName);
-            return query.getResultList();
+            List<Book> books = query.getResultList();
+            List<Author> authorsByStyle = new ArrayList<>();
+            for(Book bookByStyle : books){
+                if(Objects.equals(bookByStyle.getStyle().getStyleName(), styleName)){
+                    authorsByStyle.add(bookByStyle.getAuthor());
+                }
+            }
+            return authorsByStyle;
         } catch (PersistenceException e) {
             return null;
         }
     }
 
-    @Transactional
     @Override
     public int deleteById(long id) {
-        Style styleById = findById(id).orElse(new Style());
         int resultSuccess = 0;
         try {
+            Style styleById = findById(id).orElse(new Style());
+            if(!(styleById.getId() == 0)){
+                resultSuccess = 1;
+            }
             em.remove(styleById);
-            em.flush();
-            em.clear();
-            resultSuccess = 1;
         } catch (PersistenceException e) {
             System.out.println("Не удалось удалить жанр");
         }

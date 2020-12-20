@@ -1,16 +1,10 @@
 package com.books.books.repositories;
 
 import com.books.books.models.Book;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +17,6 @@ public class BookRepositoryJpaImpl implements BookRepositoryJpa {
     @PersistenceContext
     EntityManager em;
 
-    @Transactional
     @Override
     public Optional<Book> save(Book book) {
         if (book.getId() == 0) {
@@ -48,26 +41,22 @@ public class BookRepositoryJpaImpl implements BookRepositoryJpa {
 
     @Override
     public List<Book> findAll() {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Book> bookCriteriaQuery = cb.createQuery(Book.class);
-        Root<Book> rootEntry = bookCriteriaQuery.from(Book.class);
-        CriteriaQuery<Book> all = bookCriteriaQuery.select(rootEntry);
-        TypedQuery<Book> allQuery = em.createQuery(all);
-        return allQuery.getResultList();
+        TypedQuery<Book> query = em.createQuery("select b from Book b", Book.class);
+        return query.getResultList();
     }
 
 
-    @Transactional(readOnly = true)
+
     @Override
     public Optional<Book> findById(long id) {
         EntityGraph<?> commentGraph = em.getEntityGraph("comment-entity-graph");
         Map<String, Object> properties = new HashMap<>();
         properties.put("javax.persistence.fetchgraph", commentGraph);
 
-        return Optional.ofNullable(em.find(Book.class, id, properties));
+        return Optional.ofNullable(em.find(Book.class, id));
     }
 
-    @Transactional
+
     @Override
     public Book findByName(String name) {
         TypedQuery<Book> query = em.createQuery("select b from Book b where b.bookName = :name", Book.class);
@@ -79,16 +68,16 @@ public class BookRepositoryJpaImpl implements BookRepositoryJpa {
         }
     }
 
-    @Transactional
     @Override
     public int deleteById(long id) {
-        Book bookById = findById(id).orElse(new Book());
+
         int resultSuccess = 0;
         try {
+            Book bookById = findById(id).orElse(new Book());
+            if(!(bookById.getId() == 0)){
+                resultSuccess = 1;
+            }
             em.remove(bookById);
-            em.flush();
-            em.clear();
-            resultSuccess = 1;
         } catch (PersistenceException e) {
             System.out.println("Не удалось удалить книгу");
         }

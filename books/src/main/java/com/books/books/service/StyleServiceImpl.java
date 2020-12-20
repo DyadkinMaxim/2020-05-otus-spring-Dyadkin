@@ -27,6 +27,7 @@ public class StyleServiceImpl implements StyleService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Print all styles", key = {"s1"})
     public void printStyles() {
         List<Style> styles = styleRepository.findAll();
@@ -37,6 +38,7 @@ public class StyleServiceImpl implements StyleService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     @ShellMethod(value = "Print style by id", key = {"s2"})
     public void printStyleById() {
         Scanner scanner = new Scanner(System.in);
@@ -58,6 +60,7 @@ public class StyleServiceImpl implements StyleService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Add new style", key = {"s3"})
     public void save() {
         Scanner scanner = new Scanner(System.in);
@@ -112,6 +115,7 @@ public class StyleServiceImpl implements StyleService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Delete style", key = {"s5"})
     public void delete() {
         Scanner scanner = new Scanner(System.in);
@@ -132,6 +136,7 @@ public class StyleServiceImpl implements StyleService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Print books by style", key = {"s6"})
     public void printBooksByStyle() {
         Scanner scanner = new Scanner(System.in);
@@ -143,15 +148,14 @@ public class StyleServiceImpl implements StyleService {
         }
         List<Book> booksByStyle = styleRepository.findBooksByStyle(styleName);
         if (!booksByStyle.isEmpty()) {
-            for (Book book : booksByStyle) {
-                bookService.printBookInConsole(book);
-            }
+           bookService.printAllBooksInConsole(booksByStyle);
         } else {
             System.out.println("Не найдено книг по введенному жанру");
         }
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Print authors by style", key = {"s7"})
     public void printAuthorsByStyle() {
         Scanner scanner = new Scanner(System.in);

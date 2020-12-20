@@ -1,12 +1,11 @@
 package com.books.books.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -21,6 +20,7 @@ public class Comment {
     @Column(name = "comment", nullable = false)
     private String commentText;
 
-    @JoinColumn(name = "book_id")
-    private long bookId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn
+    private Book book;
 }

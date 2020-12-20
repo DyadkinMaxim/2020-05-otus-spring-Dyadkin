@@ -34,6 +34,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Print all authors", key = {"a1"})
     public void printAuthors() {
         List<Author> authors = authorRepository.findAll();
@@ -44,6 +45,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     @ShellMethod(value = "Print author by id", key = {"a2"})
     public void printAuthorById() {
         Scanner scanner = new Scanner(System.in);
@@ -65,6 +67,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Add new author", key = {"a3"})
     public void save() {
         Scanner scanner = new Scanner(System.in);
@@ -119,6 +122,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Delete author", key = {"a5"})
     public void delete() {
         Scanner scanner = new Scanner(System.in);
@@ -139,6 +143,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Print books by author", key = {"a6"})
     public void printBooksByAuthor() {
         Scanner scanner = new Scanner(System.in);
@@ -150,9 +155,7 @@ public class AuthorServiceImpl implements AuthorService {
         }
         List<Book> booksByAuthor = authorRepository.findBooksByAuthor(authorName);
         if (!booksByAuthor.isEmpty()) {
-            for (Book book : booksByAuthor) {
-                bookService.printBookInConsole(book);
-            }
+                bookService.printAllBooksInConsole(booksByAuthor);
         } else {
             System.out.println("Не найдено книг по введенному автору");
         }
@@ -160,6 +163,7 @@ public class AuthorServiceImpl implements AuthorService {
 
 
     @Override
+    @Transactional
     @ShellMethod(value = "Print styles by author", key = {"a7"})
     public void printStylesByAuthor() {
         Scanner scanner = new Scanner(System.in);

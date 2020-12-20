@@ -26,11 +26,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Print all comments", key = {"c1"})
     public void printComments() {
         List<Comment> comments = commentRepository.findAll();
         for (Comment comment : comments) {
-            Book book = bookRepository.findById(comment.getBookId()).orElse(new Book());
+            Book book = bookRepository.findById(comment.getBook().getId()).orElse(new Book());
             String commentText = " ID: " + comment.getId() + ";" +
                     " \n Комментарий: " + comment.getCommentText() +
                     " \n Книга: " + book.getBookName();
@@ -39,6 +40,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     @ShellMethod(value = "Print comment by id", key = {"c2"})
     public void printCommentById() {
         Scanner scanner = new Scanner(System.in);
@@ -60,6 +62,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Add new comment", key = {"c3"})
     public void save() {
         Scanner scanner = new Scanner(System.in);
@@ -84,7 +87,7 @@ public class CommentServiceImpl implements CommentService {
         }
         Comment comment = new Comment();
         comment.setCommentText(commentText);
-        comment.setBookId(bookId);
+        comment.setBook(book);
         long commentId = commentRepository.save(comment).orElse(0L);
         if (commentId != 0) {
             Comment newComment = commentRepository.findById(commentId).orElse(new Comment());
@@ -124,6 +127,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Delete comment", key = {"c5"})
     public void delete() {
         Scanner scanner = new Scanner(System.in);
