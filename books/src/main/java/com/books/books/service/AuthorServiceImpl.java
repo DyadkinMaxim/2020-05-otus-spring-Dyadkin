@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -110,7 +111,7 @@ public class AuthorServiceImpl implements AuthorService {
             System.out.println("Автор не может быть пустым");
             return;
         }
-        Author  updatedAuthor = authorRepository.findById(authorId).orElse(new Author());
+        Author updatedAuthor = authorRepository.findById(authorId).orElse(new Author());
         if (updatedAuthor.getId() != 0) {
             updatedAuthor.setAuthorName(authorName);
             Author newAuthor = authorRepository.findById(authorId).orElse(new Author());
@@ -134,11 +135,11 @@ public class AuthorServiceImpl implements AuthorService {
             System.out.println("Неверный id. Проверьте введенные данные");
             return;
         }
-        int resultSuccess = authorRepository.deleteById(authorId);
-        if (resultSuccess != 0) {
-            System.out.println("Удален автор с Id : " + authorId);
+        Author author = authorRepository.findById(authorId).orElse(new Author());
+        if (!(author.getId() == 0)) {
+            authorRepository.deleteById(authorId);
         } else {
-            System.out.println("Не найден автор с id: " + authorId);
+            System.out.println("Не найдено автора по id: " + authorId);
         }
     }
 
@@ -147,15 +148,17 @@ public class AuthorServiceImpl implements AuthorService {
     @ShellMethod(value = "Print books by author", key = {"a6"})
     public void printBooksByAuthor() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите автора: ");
-        String authorName = scanner.nextLine();
-        if (authorName.isEmpty()) {
-            System.out.println("Имя автора не может быть пустым");
+        System.out.println("Введите ID автора: ");
+        long authorId;
+        try {
+            authorId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
             return;
         }
-        List<Book> booksByAuthor = authorRepository.findBooksByAuthor(authorName);
-        if (!booksByAuthor.isEmpty()) {
-                bookService.printAllBooksInConsole(booksByAuthor);
+        Author author = authorRepository.findById(authorId).orElse(new Author());
+        if (!Objects.equals(author, null)) {
+            bookService.printAllBooksInConsole(author.getAuthorBooks());
         } else {
             System.out.println("Не найдено книг по введенному автору");
         }
@@ -167,16 +170,18 @@ public class AuthorServiceImpl implements AuthorService {
     @ShellMethod(value = "Print styles by author", key = {"a7"})
     public void printStylesByAuthor() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите автора: ");
-        String authorName = scanner.nextLine();
-        if (authorName.isEmpty()) {
-            System.out.println("Имя автора не может быть пустым");
+        System.out.println("Введите ID автора: ");
+        long authorId;
+        try {
+            authorId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
             return;
         }
-        List<Style> stylesByAuthor = authorRepository.findStylesByAuthor(authorName);
-        if (!stylesByAuthor.isEmpty()) {
-            for (Style style : stylesByAuthor) {
-                String styleText = style.getStyleName();
+        Author author = authorRepository.findById(authorId).orElse(new Author());
+        if (!Objects.equals(author, null)) {
+            for (Book authorBook : author.getAuthorBooks()) {
+                String styleText = authorBook.getStyle().getStyleName();
                 System.out.println(styleText);
             }
         } else {

@@ -161,7 +161,7 @@ public class BookServiceImpl implements BookService {
         if (updatedBook.getId() != 0) {
             updatedBook.setBookName(bookName);
             Book newBook = bookRepository.findById(bookId).orElse(new Book());
-           printBookInConsole(newBook);
+            printBookInConsole(newBook);
         } else {
             System.out.println("Не найдена книга с id: " + bookId);
         }
@@ -180,14 +180,15 @@ public class BookServiceImpl implements BookService {
             System.out.println("Неверный id. Проверьте введенные данные");
             return;
         }
-        int resultSuccess = bookRepository.deleteById(bookId);
-        if (resultSuccess != 0) {
-            System.out.println("Удалена книга с Id : " + bookId);
+        Book book = bookRepository.findById(bookId).orElse(new Book());
+        if (!(book.getId() == 0)) {
+            bookRepository.deleteById(bookId);
         } else {
-            System.out.println("Не найдена книга с id: " + bookId);
+            System.out.println("Не найдено книг по id: " + bookId);
         }
     }
 
+    @Override
     public void printAllBooksInConsole(List<Book> books) {
         for (Book book : books) {
             List<String> bookText = new ArrayList<>();
@@ -201,6 +202,7 @@ public class BookServiceImpl implements BookService {
         }
     }
 
+    @Override
     public void printBookInConsole(Book book) {
         List<String> bookText = new ArrayList<>();
         bookText.add("ID: " + book.getId() +

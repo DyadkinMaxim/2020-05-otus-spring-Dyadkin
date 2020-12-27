@@ -21,4 +21,7 @@ public class Author {
 
     @Column(name = "author", nullable = false)
     private String authorName;
+
+    @OneToMany(targetEntity = Book.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "author")
+    private List<Book> authorBooks;
 }

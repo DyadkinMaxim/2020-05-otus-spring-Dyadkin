@@ -127,12 +127,13 @@ public class StyleServiceImpl implements StyleService {
             System.out.println("Неверный id. Проверьте введенные данные");
             return;
         }
-        int resultSuccess = styleRepository.deleteById(styleId);
-        if (resultSuccess != 0) {
-            System.out.println("Удален жанр с Id : " + styleId);
+        Style style = styleRepository.findById(styleId).orElse(new Style());
+        if (!(style.getId() == 0)) {
+            styleRepository.deleteById(styleId);
         } else {
-            System.out.println("Не найден жанр с id: " + styleId);
+            System.out.println("Не найдено автора по id: " + styleId);
         }
+
     }
 
     @Override
@@ -140,17 +141,19 @@ public class StyleServiceImpl implements StyleService {
     @ShellMethod(value = "Print books by style", key = {"s6"})
     public void printBooksByStyle() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите жанр: ");
-        String styleName = scanner.nextLine();
-        if (styleName.isEmpty()) {
-            System.out.println("Жанр не может быть пустым");
+        System.out.println("Введите ID жанра: ");
+        long styleId;
+        try {
+            styleId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
             return;
         }
-        List<Book> booksByStyle = styleRepository.findBooksByStyle(styleName);
-        if (!booksByStyle.isEmpty()) {
-           bookService.printAllBooksInConsole(booksByStyle);
+        Style style = styleRepository.findById(styleId).orElse(new Style());
+        if (!Objects.equals(style, null)) {
+            bookService.printAllBooksInConsole(style.getStyleBooks());
         } else {
-            System.out.println("Не найдено книг по введенному жанру");
+            System.out.println("Не найдено жанров по введенному жанру");
         }
     }
 
@@ -159,16 +162,18 @@ public class StyleServiceImpl implements StyleService {
     @ShellMethod(value = "Print authors by style", key = {"s7"})
     public void printAuthorsByStyle() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите жанр: ");
-        String styleName = scanner.nextLine();
-        if (styleName.isEmpty()) {
-            System.out.println("Имя автора не может быть пустым");
+        System.out.println("Введите ID жанра: ");
+        long styleId;
+        try {
+            styleId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
             return;
         }
-        List<Author> authorsByStyle = styleRepository.findAuthorsByStyle(styleName);
-        if (!authorsByStyle.isEmpty()) {
-            for (Author author : authorsByStyle) {
-                String authorText = author.getAuthorName();
+        Style style = styleRepository.findById(styleId).orElse(new Style());
+        if (!Objects.equals(style, null)) {
+            for (Book bookByStyle : style.getStyleBooks()) {
+                String authorText = bookByStyle.getAuthor().getAuthorName();
                 System.out.println(authorText);
             }
         } else {

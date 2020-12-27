@@ -1,11 +1,13 @@
 package com.books.books.repositories;
 
-import com.books.books.models.Book;
 import com.books.books.models.Comment;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.*;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,17 +40,13 @@ public class CommentRepositoryJpaImpl implements CommentRepositoryJpa {
     }
 
     @Override
-    public int deleteById(long id) {
-        int resultSuccess = 0;
+    public void deleteById(long id) {
         try {
             Comment commentById = findById(id).orElse(new Comment());
-            if(!(commentById.getId() == 0)){
-                resultSuccess = 1;
-            }
             em.remove(commentById);
+            System.out.println("Удален комментарий с id:" + id);
         } catch (PersistenceException e) {
             System.out.println("Не удалось удалить комментарий");
         }
-        return resultSuccess;
     }
 }

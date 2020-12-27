@@ -1,8 +1,6 @@
 package com.books.books.repositories;
 
 
-import com.books.books.models.Author;
-import com.books.books.models.Book;
 import com.books.books.models.Style;
 
 import java.util.List;
@@ -17,9 +15,5 @@ public interface StyleRepositoryJpa {
 
     Style findByName(String name);
 
-    List<Book> findBooksByStyle(String styleName);
-
-    List<Author> findAuthorsByStyle(String styleName);
-
-    int deleteById(long id);
+    void deleteById(long id);
 }

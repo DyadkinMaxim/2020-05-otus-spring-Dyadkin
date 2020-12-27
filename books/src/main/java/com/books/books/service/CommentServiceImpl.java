@@ -139,11 +139,11 @@ public class CommentServiceImpl implements CommentService {
             System.out.println("Неверный id. Проверьте введенные данные");
             return;
         }
-        int resultSuccess = commentRepository.deleteById(commentId);
-        if (resultSuccess != 0) {
-            System.out.println("Удален комментарий с Id : " + commentId);
+        Comment comment = commentRepository.findById(commentId).orElse(new Comment());
+        if (!(comment.getId() == 0)) {
+            commentRepository.deleteById(commentId);
         } else {
-            System.out.println("Не найден комментарий с id: " + commentId);
+            System.out.println("Не найдено комментариев по id: " + commentId);
         }
     }
 }

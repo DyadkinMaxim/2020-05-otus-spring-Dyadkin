@@ -2,7 +2,6 @@ package com.books.books.repositories;
 
 import com.books.books.models.Book;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.HashMap;
@@ -41,10 +40,11 @@ public class BookRepositoryJpaImpl implements BookRepositoryJpa {
 
     @Override
     public List<Book> findAll() {
+        EntityGraph<?> commentGraph = em.getEntityGraph("comment-entity-graph");
         TypedQuery<Book> query = em.createQuery("select b from Book b", Book.class);
+        query.setHint("javax.persistence.fetchgraph", commentGraph);
         return query.getResultList();
     }
-
 
 
     @Override
@@ -69,18 +69,13 @@ public class BookRepositoryJpaImpl implements BookRepositoryJpa {
     }
 
     @Override
-    public int deleteById(long id) {
-
-        int resultSuccess = 0;
+    public void deleteById(long id) {
         try {
             Book bookById = findById(id).orElse(new Book());
-            if(!(bookById.getId() == 0)){
-                resultSuccess = 1;
-            }
             em.remove(bookById);
+            System.out.println("Удалена книга с id:" + id);
         } catch (PersistenceException e) {
             System.out.println("Не удалось удалить книгу");
         }
-        return resultSuccess;
     }
 }

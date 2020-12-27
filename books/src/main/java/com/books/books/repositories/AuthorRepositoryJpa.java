@@ -17,9 +17,5 @@ public interface AuthorRepositoryJpa {
 
     Author findByName(String name);
 
-    List<Book> findBooksByAuthor(String authorName);
-
-    List<Style> findStylesByAuthor(String authorName);
-
-    int deleteById(long id);
+    void deleteById(long id);
 }

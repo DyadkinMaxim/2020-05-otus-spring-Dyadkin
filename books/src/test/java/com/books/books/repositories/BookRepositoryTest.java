@@ -59,8 +59,8 @@ class BookRepositoryTest {
     @DisplayName(" должен корректно сохранять всю информацию о книге")
     @Test
     void shouldSaveAllBookInfo() {
-        val style = new Style(0, NEW_BOOK_STYLE);
-        val author = new Author(0, NEW_BOOK_AUTHOR);
+        val style = new Style(0, NEW_BOOK_STYLE, null);
+        val author = new Author(0, NEW_BOOK_AUTHOR, null);
         val newBook = new Book(0, NEW_BOOK_NAME, author, style, null);
         val comment = new Comment(0, NEW_BOOK_COMMENT, newBook);
         val comments = Collections.singletonList(comment);
