@@ -3,7 +3,6 @@ package com.books.books.dao;
 import com.books.books.dto.AuthorDTO;
 import com.books.books.dto.BookDTO;
 import com.books.books.dto.StyleDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

@@ -1,7 +1,5 @@
 package com.books.books.dto;
 
-import org.springframework.lang.Nullable;
-
 public class BookDTO {
 
     public BookDTO(String id, String name, String author, String style) {

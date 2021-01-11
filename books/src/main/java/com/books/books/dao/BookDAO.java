@@ -1,8 +1,6 @@
 package com.books.books.dao;
 
-import com.books.books.dto.AuthorDTO;
 import com.books.books.dto.BookDTO;
-import com.books.books.dto.StyleDTO;
 import org.springframework.lang.Nullable;
 
 import java.util.List;

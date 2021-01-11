@@ -1,60 +1,191 @@
 package com.books.books.service;
 
-import com.books.books.dao.AuthorDAOImpl;
-import com.books.books.dao.BookDAOImpl;
-import com.books.books.dto.AuthorDTO;
-import com.books.books.dto.BookDTO;
-import com.books.books.dto.StyleDTO;
+import com.books.books.models.Author;
+import com.books.books.models.Book;
+import com.books.books.models.Style;
+import com.books.books.repositories.AuthorRepositoryJpa;
+import com.books.books.repositories.BookRepositoryJpa;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 @Service
 @ShellComponent
-public class AuthorServiceImpl implements AuthorService{
+public class AuthorServiceImpl implements AuthorService {
 
-    private final AuthorDAOImpl authorDAO;
+    @PersistenceContext
+    EntityManager em;
 
-    public AuthorServiceImpl(AuthorDAOImpl authorDAO) {
-        this.authorDAO = authorDAO;
+    private final AuthorRepositoryJpa authorRepository;
+    private final BookRepositoryJpa bookRepository;
+    private final BookService bookService;
+
+    public AuthorServiceImpl(AuthorRepositoryJpa authorRepository, BookRepositoryJpa bookRepository, BookService bookService) {
+        this.authorRepository = authorRepository;
+        this.bookRepository = bookRepository;
+        this.bookService = bookService;
     }
 
     @Override
+    @Transactional
     @ShellMethod(value = "Print all authors", key = {"a1"})
     public void printAuthors() {
-        List<AuthorDTO> authors =  authorDAO.getAuthors();
-        for (AuthorDTO authorDTO : authors) {
-            String bookText = authorDTO.getName();
-            System.out.println(bookText);
+        List<Author> authors = authorRepository.findAll();
+        for (Author author : authors) {
+            String authorText = " ID: " + author.getId() + "; \n Автор: " + author.getAuthorName();
+            System.out.println(authorText);
         }
     }
 
     @Override
-    @ShellMethod(value = "Print books by author", key = {"a2"})
-    public void printAuthorBooks() {
+    @Transactional(readOnly = true)
+    @ShellMethod(value = "Print author by id", key = {"a2"})
+    public void printAuthorById() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите автора: ");
-        String authorName = scanner.nextLine();
-        List<BookDTO> booksByAuthor =  authorDAO.getAuthorBooks(authorName);
-        for (BookDTO bookDTO : booksByAuthor) {
-            String bookText =  " Название: " + bookDTO.getName() + "; \n Автор: " + bookDTO.getAuthor()+ "; \n Жанр:" + bookDTO.getStyle();
-            System.out.println(bookText);
+        System.out.println("Введите ID автора: ");
+        long authorId;
+        try {
+            authorId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
+            return;
+        }
+        Author author = authorRepository.findById(authorId).orElse(new Author());
+        if (author.getId() != 0) {
+            String authorText = " ID: " + author.getId() + "; \n Автор: " + author.getAuthorName();
+            System.out.println(authorText);
+        } else {
+            System.out.println("Не найден автор с id: " + authorId);
         }
     }
 
     @Override
-    @ShellMethod(value = "Print styles by author", key = {"a3"})
-    public void printAuthorStyles() {
+    @Transactional
+    @ShellMethod(value = "Add new author", key = {"a3"})
+    public void save() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите автора: ");
+        System.out.println("Введите имя автора: ");
         String authorName = scanner.nextLine();
-        List<StyleDTO> stylesByAuthor =  authorDAO.getAuthorStyles(authorName);
-        for (StyleDTO styleDTO : stylesByAuthor) {
-            String styleText = styleDTO.getName();
-            System.out.println(styleText);
+        if (authorName.isEmpty()) {
+            System.out.println("Имя автора не может быть пустым");
+            return;
+        }
+        if (!Objects.equals(authorRepository.findByName(authorName), null)) {
+            System.out.println("Такой автор уже добавлен");
+            return;
+        }
+        Author author = new Author();
+        author.setAuthorName(authorName);
+        long authorId = authorRepository.save(author).orElse(0L);
+        if (authorId != 0) {
+            Author newAuthor = authorRepository.findById(authorId).orElse(new Author());
+            System.out.println("Добавлен автор: \n" +
+                    " ID: " + newAuthor.getId() + "; \n Автор: " + newAuthor.getAuthorName());
+        }
+    }
+
+    @Override
+    @Transactional
+    @ShellMethod(value = "Update author", key = {"a4"})
+    public void update() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите ID редактируемого автора: ");
+        long authorId;
+        try {
+            authorId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
+            return;
+        }
+        System.out.println("Введите название автора: ");
+        String authorName = scanner.nextLine();
+        if (authorName.isEmpty()) {
+            System.out.println("Автор не может быть пустым");
+            return;
+        }
+        Author updatedAuthor = authorRepository.findById(authorId).orElse(new Author());
+        if (updatedAuthor.getId() != 0) {
+            updatedAuthor.setAuthorName(authorName);
+            Author newAuthor = authorRepository.findById(authorId).orElse(new Author());
+            System.out.println("Изменен автор: \n" +
+                    " ID: " + newAuthor.getId() + "; \n Автор: " + newAuthor.getAuthorName());
+        } else {
+            System.out.println("Не найден автор с id: " + authorId);
+        }
+    }
+
+    @Override
+    @Transactional
+    @ShellMethod(value = "Delete author", key = {"a5"})
+    public void delete() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите ID удаляемого автора: ");
+        long authorId;
+        try {
+            authorId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
+            return;
+        }
+        Author author = authorRepository.findById(authorId).orElse(new Author());
+        if (!(author.getId() == 0)) {
+            authorRepository.deleteById(authorId);
+        } else {
+            System.out.println("Не найдено автора по id: " + authorId);
+        }
+    }
+
+    @Override
+    @Transactional
+    @ShellMethod(value = "Print books by author", key = {"a6"})
+    public void printBooksByAuthor() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите ID автора: ");
+        long authorId;
+        try {
+            authorId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
+            return;
+        }
+        Author author = authorRepository.findById(authorId).orElse(new Author());
+        if (!Objects.equals(author, null)) {
+            bookService.printAllBooksInConsole(author.getAuthorBooks());
+        } else {
+            System.out.println("Не найдено книг по введенному автору");
+        }
+    }
+
+
+    @Override
+    @Transactional
+    @ShellMethod(value = "Print styles by author", key = {"a7"})
+    public void printStylesByAuthor() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите ID автора: ");
+        long authorId;
+        try {
+            authorId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
+            return;
+        }
+        Author author = authorRepository.findById(authorId).orElse(new Author());
+        if (!Objects.equals(author, null)) {
+            for (Book authorBook : author.getAuthorBooks()) {
+                String styleText = authorBook.getStyle().getStyleName();
+                System.out.println(styleText);
+            }
+        } else {
+            System.out.println("Не найдено жанров по введенному автору");
         }
     }
 }

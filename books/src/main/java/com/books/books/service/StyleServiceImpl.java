@@ -1,61 +1,183 @@
 package com.books.books.service;
 
-import com.books.books.dao.AuthorDAOImpl;
-import com.books.books.dao.StyleDAOImpl;
-import com.books.books.dto.AuthorDTO;
-import com.books.books.dto.BookDTO;
-import com.books.books.dto.StyleDTO;
+import com.books.books.models.Author;
+import com.books.books.models.Book;
+import com.books.books.models.Comment;
+import com.books.books.models.Style;
+import com.books.books.repositories.StyleRepositoryJpa;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.Style;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 @Service
 @ShellComponent
 public class StyleServiceImpl implements StyleService {
 
-    private final StyleDAOImpl styleDAO;
+    private final StyleRepositoryJpa styleRepository;
+    private final BookService bookService;
 
-    public StyleServiceImpl(StyleDAOImpl styleDAO) {
-        this.styleDAO = styleDAO;
+    public StyleServiceImpl(StyleRepositoryJpa styleRepository, BookService bookService) {
+        this.styleRepository = styleRepository;
+        this.bookService = bookService;
     }
 
     @Override
-    @ShellMethod(value = "Print styles", key = {"s1"})
+    @Transactional
+    @ShellMethod(value = "Print all styles", key = {"s1"})
     public void printStyles() {
-        List<StyleDTO> styles =  styleDAO.getStyles();
-        for (StyleDTO styleDTO : styles) {
-            String styleText =  "Имя: " + styleDTO.getName();
+        List<Style> styles = styleRepository.findAll();
+        for (Style style : styles) {
+            String styleText = " ID: " + style.getId() + "; \n Жанр: " + style.getStyleName();
             System.out.println(styleText);
         }
     }
 
     @Override
-    @ShellMethod(value = "Print books by style", key = {"s2"})
-    public void printBooksByStyle() {
+    @Transactional(readOnly = true)
+    @ShellMethod(value = "Print style by id", key = {"s2"})
+    public void printStyleById() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите жанр: ");
-        String styleName = scanner.nextLine();
-        List<BookDTO> booksByStyle =  styleDAO.getBooksByStyle(styleName);
-        for (BookDTO bookDTO : booksByStyle) {
-            String bookText =  "Название: " + bookDTO.getName() + "; \n Автор: " + bookDTO.getAuthor()+ "; \n Жанр:" + bookDTO.getStyle();
-            System.out.println(bookText);
+        System.out.println("Введите ID жанра: ");
+        long styleId;
+        try {
+            styleId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
+            return;
+        }
+        Style style = styleRepository.findById(styleId).orElse(new Style());
+        if (style.getId() != 0) {
+            String styleText = " ID: " + style.getId() + "; \n Жанр: " + style.getStyleName();
+            System.out.println(styleText);
+        } else {
+            System.out.println("Не найден жанр с id: " + styleId);
         }
     }
 
     @Override
-    @ShellMethod(value = "Print authors by style", key = {"s3"})
+    @Transactional
+    @ShellMethod(value = "Add new style", key = {"s3"})
+    public void save() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите название жанра: ");
+        String styleName = scanner.nextLine();
+        if (styleName.isEmpty()) {
+            System.out.println("Жанр не может быть пустым");
+            return;
+        }
+        if (!Objects.equals(styleRepository.findByName(styleName), null)) {
+            System.out.println("Такой жанр уже существует");
+            return;
+        }
+        Style style = new Style();
+        style.setStyleName(styleName);
+        long styleId = styleRepository.save(style).orElse(0L);
+        if (styleId != 0) {
+            Style newStyle = styleRepository.findById(styleId).orElse(new Style());
+            System.out.println("Добавлен жанр: \n" +
+                    " ID: " + newStyle.getId() + "; \n Жанр: " + newStyle.getStyleName());
+        }
+    }
+
+    @Override
+    @Transactional
+    @ShellMethod(value = "Update style", key = {"s4"})
+    public void update() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите ID изменяемого жанра: ");
+        long styleId;
+        try {
+            styleId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
+            return;
+        }
+        System.out.println("Введите название жанра: ");
+        String styleName = scanner.nextLine();
+        if (styleName.isEmpty()) {
+            System.out.println("Жанр не может быть пустым");
+            return;
+        }
+        Style updatedStyle = styleRepository.findById(styleId).orElse(new Style());
+        if (updatedStyle.getId() != 0) {
+            updatedStyle.setStyleName(styleName);
+            Style newStyle = styleRepository.findById(styleId).orElse(new Style());
+            System.out.println("Изменен жанр: \n" +
+                    " ID: " + newStyle.getId() + "; \n Жанр: " + newStyle.getStyleName());
+        } else {
+            System.out.println("Не найден жанр с id: " + styleId);
+        }
+    }
+
+    @Override
+    @Transactional
+    @ShellMethod(value = "Delete style", key = {"s5"})
+    public void delete() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите ID удаляемого жанра: ");
+        long styleId;
+        try {
+            styleId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
+            return;
+        }
+        Style style = styleRepository.findById(styleId).orElse(new Style());
+        if (!(style.getId() == 0)) {
+            styleRepository.deleteById(styleId);
+        } else {
+            System.out.println("Не найдено автора по id: " + styleId);
+        }
+
+    }
+
+    @Override
+    @Transactional
+    @ShellMethod(value = "Print books by style", key = {"s6"})
+    public void printBooksByStyle() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите ID жанра: ");
+        long styleId;
+        try {
+            styleId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
+            return;
+        }
+        Style style = styleRepository.findById(styleId).orElse(new Style());
+        if (!Objects.equals(style, null)) {
+            bookService.printAllBooksInConsole(style.getStyleBooks());
+        } else {
+            System.out.println("Не найдено жанров по введенному жанру");
+        }
+    }
+
+    @Override
+    @Transactional
+    @ShellMethod(value = "Print authors by style", key = {"s7"})
     public void printAuthorsByStyle() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите жанр: ");
-        String styleName = scanner.nextLine();
-        List<AuthorDTO> authorsByStyle =  styleDAO.getAuthorsByStyle(styleName);
-        for (AuthorDTO authorDTO : authorsByStyle) {
-            String authorText = authorDTO.getName();
-            System.out.println(authorText);
+        System.out.println("Введите ID жанра: ");
+        long styleId;
+        try {
+            styleId = Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Неверный id. Проверьте введенные данные");
+            return;
+        }
+        Style style = styleRepository.findById(styleId).orElse(new Style());
+        if (!Objects.equals(style, null)) {
+            for (Book bookByStyle : style.getStyleBooks()) {
+                String authorText = bookByStyle.getAuthor().getAuthorName();
+                System.out.println(authorText);
+            }
+        } else {
+            System.out.println("Не найдено авторов по введенному жанру");
         }
     }
 
