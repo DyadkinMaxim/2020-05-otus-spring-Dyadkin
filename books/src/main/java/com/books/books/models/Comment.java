@@ -1,6 +1,9 @@
 package com.books.books.models;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -20,7 +23,7 @@ public class Comment {
     @Column(name = "comment", nullable = false)
     private String commentText;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Book book;
 }

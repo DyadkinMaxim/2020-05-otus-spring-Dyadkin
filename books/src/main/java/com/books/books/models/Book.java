@@ -1,7 +1,10 @@
 package com.books.books.models;
 
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
@@ -25,11 +28,11 @@ public class Book {
     @Column(name = "book", nullable = false)
     private String bookName;
 
-    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
 
-    @ManyToOne(targetEntity = Style.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(targetEntity = Style.class, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "style_id", nullable = false)
     private Style style;
 

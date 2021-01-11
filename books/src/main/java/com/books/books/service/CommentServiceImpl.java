@@ -1,26 +1,26 @@
 package com.books.books.service;
 
 
-import com.books.books.models.Author;
 import com.books.books.models.Book;
 import com.books.books.models.Comment;
-import com.books.books.repositories.BookRepositoryJpa;
-import com.books.books.repositories.CommentRepositoryJpa;
+import com.books.books.repositoriesSpringDataJPA.BookRepository;
+import com.books.books.repositoriesSpringDataJPA.CommentRepository;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Scanner;
 
 @Service
 @ShellComponent
 public class CommentServiceImpl implements CommentService {
 
-    private final CommentRepositoryJpa commentRepository;
-    private final BookRepositoryJpa bookRepository;
+    private final CommentRepository commentRepository;
+    private final BookRepository bookRepository;
 
-    public CommentServiceImpl(CommentRepositoryJpa commentRepository, BookRepositoryJpa bookRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, BookRepository bookRepository) {
         this.commentRepository = commentRepository;
         this.bookRepository = bookRepository;
     }
@@ -88,9 +88,9 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = new Comment();
         comment.setCommentText(commentText);
         comment.setBook(book);
-        long commentId = commentRepository.save(comment).orElse(0L);
-        if (commentId != 0) {
-            Comment newComment = commentRepository.findById(commentId).orElse(new Comment());
+        commentRepository.save(comment);
+        if (commentRepository.existsById(comment.getId())) {
+            Comment newComment = commentRepository.findById(comment.getId()).orElse(new Comment());
             System.out.println("Добавлен комментарий: \n" +
                     " ID: " + newComment.getId() + "; \n Комментарий: " + newComment.getCommentText());
         }

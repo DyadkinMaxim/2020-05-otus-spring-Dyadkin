@@ -2,9 +2,9 @@ package com.books.books.service;
 
 import com.books.books.models.Author;
 import com.books.books.models.Book;
-import com.books.books.models.Style;
-import com.books.books.repositories.AuthorRepositoryJpa;
-import com.books.books.repositories.BookRepositoryJpa;
+import com.books.books.repositoriesSpringDataJPA.AuthorRepository;
+import com.books.books.repositoriesSpringDataJPA.BookRepository;
+import com.books.books.repositoriesSpringDataJPA.StyleRepository;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -24,13 +23,18 @@ public class AuthorServiceImpl implements AuthorService {
     @PersistenceContext
     EntityManager em;
 
-    private final AuthorRepositoryJpa authorRepository;
-    private final BookRepositoryJpa bookRepository;
+    private final AuthorRepository authorRepository;
+    private final BookRepository bookRepository;
+    private final StyleRepository styleRepository;
     private final BookService bookService;
 
-    public AuthorServiceImpl(AuthorRepositoryJpa authorRepository, BookRepositoryJpa bookRepository, BookService bookService) {
+    public AuthorServiceImpl(AuthorRepository authorRepository,
+                             BookRepository bookRepository,
+                             StyleRepository styleRepository,
+                             BookService bookService) {
         this.authorRepository = authorRepository;
         this.bookRepository = bookRepository;
+        this.styleRepository = styleRepository;
         this.bookService = bookService;
     }
 
@@ -84,9 +88,9 @@ public class AuthorServiceImpl implements AuthorService {
         }
         Author author = new Author();
         author.setAuthorName(authorName);
-        long authorId = authorRepository.save(author).orElse(0L);
-        if (authorId != 0) {
-            Author newAuthor = authorRepository.findById(authorId).orElse(new Author());
+      authorRepository.save(author);
+        if (authorRepository.existsById(author.getId())) {
+            Author newAuthor = authorRepository.findById(author.getId()).orElse(new Author());
             System.out.println("Добавлен автор: \n" +
                     " ID: " + newAuthor.getId() + "; \n Автор: " + newAuthor.getAuthorName());
         }
@@ -137,7 +141,12 @@ public class AuthorServiceImpl implements AuthorService {
         }
         Author author = authorRepository.findById(authorId).orElse(new Author());
         if (!(author.getId() == 0)) {
-            authorRepository.deleteById(authorId);
+            if(author.getAuthorBooks().isEmpty()) {
+                authorRepository.deleteById(authorId);
+            }
+            else{
+                System.out.println("Удалить автора невозможно - сначала удалите все книги этого автора");
+            }
         } else {
             System.out.println("Не найдено автора по id: " + authorId);
         }
