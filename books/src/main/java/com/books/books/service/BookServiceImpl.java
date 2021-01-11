@@ -4,9 +4,8 @@ import com.books.books.models.Author;
 import com.books.books.models.Book;
 import com.books.books.models.Comment;
 import com.books.books.models.Style;
-import com.books.books.repositories.BookRepositoryJpa;
-import com.books.books.repositories.CommentRepositoryJpa;
-import org.hibernate.SessionFactory;
+import com.books.books.repositoriesSpringDataJPA.BookRepository;
+import com.books.books.repositoriesSpringDataJPA.CommentRepository;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
@@ -26,10 +25,10 @@ public class BookServiceImpl implements BookService {
     @PersistenceContext
     EntityManager em;
 
-    private final BookRepositoryJpa bookRepository;
-    private final CommentRepositoryJpa commentRepository;
+    private final BookRepository bookRepository;
+    private final CommentRepository commentRepository;
 
-    public BookServiceImpl(BookRepositoryJpa bookRepository, CommentRepositoryJpa commentRepository) {
+    public BookServiceImpl(BookRepository bookRepository, CommentRepository commentRepository) {
         this.bookRepository = bookRepository;
         this.commentRepository = commentRepository;
     }
@@ -125,14 +124,13 @@ public class BookServiceImpl implements BookService {
             counter++;
         }
         Book book = new Book(0, bookName, bookAuthor, bookStyle, null);
-        Book saveBook = bookRepository.save(book).orElse(new Book());
-        long bookId = saveBook.getId();
-        if (bookId != 0) {
+        bookRepository.save(book);
+        if (bookRepository.existsById(book.getId())) {
             for (Comment comment : bookComments) {
                 comment.setBook(book);
                 commentRepository.save(comment);
             }
-            Book newBook = bookRepository.findById(bookId).orElse(new Book());
+            Book newBook = bookRepository.findById(book.getId()).orElse(new Book());
             System.out.println("Добавлена книга: ");
             printBookInConsole(newBook);
         }
