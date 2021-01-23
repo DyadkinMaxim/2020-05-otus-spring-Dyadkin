@@ -28,7 +28,7 @@ public class StyleServiceImpl implements StyleService {
     @Transactional
     @ShellMethod(value = "Print all styles", key = {"s1"})
     public void printStyles() {
-        List<Style> styles = styleRepository.findAll();
+        List<Style> styles = (List<Style>) styleRepository.findAll();
         for (Style style : styles) {
             String styleText = " ID: " + style.getId() + "; \n Жанр: " + style.getStyleName();
             System.out.println(styleText);
@@ -68,14 +68,15 @@ public class StyleServiceImpl implements StyleService {
             System.out.println("Жанр не может быть пустым");
             return;
         }
-        if (!Objects.equals(styleRepository.findByName(styleName), null)) {
+        if (!Objects.equals(styleRepository.findByStyleNameContains(styleName), null)) {
             System.out.println("Такой жанр уже существует");
             return;
         }
         Style style = new Style();
         style.setStyleName(styleName);
         styleRepository.save(style);
-        if (styleRepository.existsById(style.getId())) {
+        Style savedStyle = styleRepository.findById(style.getId()).orElse(new Style());
+        if (savedStyle.getId() != 0) {
             Style newStyle = styleRepository.findById(style.getId()).orElse(new Style());
             System.out.println("Добавлен жанр: \n" +
                     " ID: " + newStyle.getId() + "; \n Жанр: " + newStyle.getStyleName());

@@ -42,7 +42,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     @ShellMethod(value = "Print all authors", key = {"a1"})
     public void printAuthors() {
-        List<Author> authors = authorRepository.findAll();
+        List<Author> authors = (List<Author>) authorRepository.findAll();
         for (Author author : authors) {
             String authorText = " ID: " + author.getId() + "; \n Автор: " + author.getAuthorName();
             System.out.println(authorText);
@@ -82,14 +82,15 @@ public class AuthorServiceImpl implements AuthorService {
             System.out.println("Имя автора не может быть пустым");
             return;
         }
-        if (!Objects.equals(authorRepository.findByName(authorName), null)) {
+        if (!Objects.equals(authorRepository.findByAuthorNameContains(authorName), null)) {
             System.out.println("Такой автор уже добавлен");
             return;
         }
         Author author = new Author();
         author.setAuthorName(authorName);
       authorRepository.save(author);
-        if (authorRepository.existsById(author.getId())) {
+      Author savedAuthor = authorRepository.findById(author.getId()).orElse(new Author());
+        if (savedAuthor.getId() != 0) {
             Author newAuthor = authorRepository.findById(author.getId()).orElse(new Author());
             System.out.println("Добавлен автор: \n" +
                     " ID: " + newAuthor.getId() + "; \n Автор: " + newAuthor.getAuthorName());

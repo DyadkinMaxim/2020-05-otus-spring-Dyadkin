@@ -28,7 +28,7 @@ public class AuthorRepositoryTest {
     @Test
     void shouldFindExpectedAuthorByName() {
         val firstAuthor = em.find(Author.class, FIRST_AUTHOR_ID);
-        Author actualAuthor = authorRepository.findByName(FIRST_AUTHOR_NAME);
+        Author actualAuthor = authorRepository.findByAuthorNameContains(FIRST_AUTHOR_NAME);
         assertThat(actualAuthor).isEqualToComparingFieldByField(firstAuthor);
     }
 }

@@ -29,7 +29,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @ShellMethod(value = "Print all comments", key = {"c1"})
     public void printComments() {
-        List<Comment> comments = commentRepository.findAll();
+        List<Comment> comments = (List<Comment>) commentRepository.findAll();
         for (Comment comment : comments) {
             Book book = bookRepository.findById(comment.getBook().getId()).orElse(new Book());
             String commentText = " ID: " + comment.getId() + ";" +
@@ -89,7 +89,8 @@ public class CommentServiceImpl implements CommentService {
         comment.setCommentText(commentText);
         comment.setBook(book);
         commentRepository.save(comment);
-        if (commentRepository.existsById(comment.getId())) {
+        Comment savedComment = commentRepository.findById(comment.getId()).orElse(new Comment());
+        if (savedComment.getId() != 0) {
             Comment newComment = commentRepository.findById(comment.getId()).orElse(new Comment());
             System.out.println("Добавлен комментарий: \n" +
                     " ID: " + newComment.getId() + "; \n Комментарий: " + newComment.getCommentText());
