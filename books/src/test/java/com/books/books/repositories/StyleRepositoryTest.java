@@ -1,6 +1,5 @@
 package com.books.books.repositories;
 
-import com.books.books.models.Author;
 import com.books.books.models.Style;
 import com.books.books.repositoriesSpringDataJPA.StyleRepository;
 import lombok.val;
@@ -29,7 +28,7 @@ public class StyleRepositoryTest {
     @Test
     void shouldFindExpectedStyleByName() {
         val firstStyle = em.find(Style.class, FIRST_STYLE_ID);
-        Style actualStyle = styleRepository.findByName(FIRST_STYLE_NAME);
+        Style actualStyle = styleRepository.findByStyleNameContains(FIRST_STYLE_NAME);
         assertThat(actualStyle).isEqualToComparingFieldByField(firstStyle);
     }
 }

@@ -37,7 +37,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @ShellMethod(value = "Print all books", key = {"b1"})
     public void printBooks() {
-        List<Book> books = bookRepository.findAll();
+        List<Book> books = (List<Book>) bookRepository.findAll();
         printAllBooksInConsole(books);
 
     }
@@ -125,7 +125,8 @@ public class BookServiceImpl implements BookService {
         }
         Book book = new Book(0, bookName, bookAuthor, bookStyle, null);
         bookRepository.save(book);
-        if (bookRepository.existsById(book.getId())) {
+        Book savedBook = bookRepository.findById(book.getId()).orElse(new Book());
+        if (savedBook.getId() != 0) {
             for (Comment comment : bookComments) {
                 comment.setBook(book);
                 commentRepository.save(comment);
