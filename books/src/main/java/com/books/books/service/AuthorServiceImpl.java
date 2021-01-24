@@ -2,9 +2,9 @@ package com.books.books.service;
 
 import com.books.books.models.Author;
 import com.books.books.models.Book;
-import com.books.books.repositoriesSpringDataJPA.AuthorRepository;
-import com.books.books.repositoriesSpringDataJPA.BookRepository;
-import com.books.books.repositoriesSpringDataJPA.StyleRepository;
+import com.books.books.mongoRepos.AuthorRepository;
+import com.books.books.mongoRepos.BookRepository;
+import com.books.books.mongoRepos.StyleRepository;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
