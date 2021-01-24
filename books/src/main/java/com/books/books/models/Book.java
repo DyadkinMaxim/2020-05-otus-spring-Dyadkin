@@ -2,6 +2,7 @@ package com.books.books.models;
 
 
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import java.util.List;
@@ -10,16 +11,10 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "books")
-@NamedEntityGraph(name = "comment-entity-graph", attributeNodes = {@NamedAttributeNode("comment")})
-@NamedEntityGraph(name = "bookName-entity-graph", attributeNodes = {@NamedAttributeNode("bookName")})
-@NamedEntityGraph(name = "author-entity-graph", attributeNodes = {@NamedAttributeNode("author")})
-@NamedEntityGraph(name = "style-entity-graph", attributeNodes = {@NamedAttributeNode("style")})
+@Document("books")
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "book", nullable = false)
@@ -35,4 +30,15 @@ public class Book {
 
     @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "book")
     private List<Comment> comment;
+
+    @Override
+    public String toString(){
+        return "Book{" +
+                "ID: "+ id +
+                "bookName: " + bookName +
+                "Author: " + author.getAuthorName() +
+                "Style: " + style.getStyleBooks() +
+                "comments: " + comment +
+                "}";
+    }
 }

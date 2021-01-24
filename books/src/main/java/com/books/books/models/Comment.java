@@ -1,6 +1,7 @@
 package com.books.books.models;
 
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 
@@ -8,12 +9,10 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "comments")
+@Document("comments")
 public class Comment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Basic(fetch = FetchType.LAZY)
@@ -23,4 +22,13 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn
     private Book book;
+
+    @Override
+    public String toString(){
+        return "Comment{" +
+                "ID: "+ id +
+                "commentText: " + commentText +
+                "Book: " + book.getBookName() +
+                "}";
+    }
 }
