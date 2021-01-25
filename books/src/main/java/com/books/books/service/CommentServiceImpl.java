@@ -89,12 +89,8 @@ public class CommentServiceImpl implements CommentService {
         comment.setCommentText(commentText);
         comment.setBook(book);
         commentRepository.save(comment);
-        Comment savedComment = commentRepository.findById(comment.getId()).orElse(new Comment());
-        if (savedComment.getId() != 0) {
-            Comment newComment = commentRepository.findById(comment.getId()).orElse(new Comment());
-            System.out.println("Добавлен комментарий: \n" +
-                    " ID: " + newComment.getId() + "; \n Комментарий: " + newComment.getCommentText());
-        }
+        System.out.println("Добавлен комментарий: \n" +
+                " ID: " + comment.getId() + "; \n Комментарий: " + comment.getCommentText());
     }
 
     @Override

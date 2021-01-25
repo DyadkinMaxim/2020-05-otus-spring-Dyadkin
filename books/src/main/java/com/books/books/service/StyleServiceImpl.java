@@ -75,12 +75,8 @@ public class StyleServiceImpl implements StyleService {
         Style style = new Style();
         style.setStyleName(styleName);
         styleRepository.save(style);
-        Style savedStyle = styleRepository.findById(style.getId()).orElse(new Style());
-        if (savedStyle.getId() != 0) {
-            Style newStyle = styleRepository.findById(style.getId()).orElse(new Style());
-            System.out.println("Добавлен жанр: \n" +
-                    " ID: " + newStyle.getId() + "; \n Жанр: " + newStyle.getStyleName());
-        }
+        System.out.println("Добавлен жанр: \n" +
+                " ID: " + style.getId() + "; \n Жанр: " + style.getStyleName());
     }
 
     @Override
