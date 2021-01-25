@@ -88,14 +88,11 @@ public class AuthorServiceImpl implements AuthorService {
         }
         Author author = new Author();
         author.setAuthorName(authorName);
-      authorRepository.save(author);
-      Author savedAuthor = authorRepository.findById(author.getId()).orElse(new Author());
-        if (savedAuthor.getId() != 0) {
-            Author newAuthor = authorRepository.findById(author.getId()).orElse(new Author());
-            System.out.println("Добавлен автор: \n" +
-                    " ID: " + newAuthor.getId() + "; \n Автор: " + newAuthor.getAuthorName());
-        }
+        authorRepository.save(author);
+        System.out.println("Добавлен автор: \n" +
+                " ID: " + author.getId() + "; \n Автор: " + author.getAuthorName());
     }
+
 
     @Override
     @Transactional

@@ -125,16 +125,8 @@ public class BookServiceImpl implements BookService {
         }
         Book book = new Book(0, bookName, bookAuthor, bookStyle, null);
         bookRepository.save(book);
-        Book savedBook = bookRepository.findById(book.getId()).orElse(new Book());
-        if (savedBook.getId() != 0) {
-            for (Comment comment : bookComments) {
-                comment.setBook(book);
-                commentRepository.save(comment);
-            }
-            Book newBook = bookRepository.findById(book.getId()).orElse(new Book());
-            System.out.println("Добавлена книга: ");
-            printBookInConsole(newBook);
-        }
+        printBookInConsole(book);
+
     }
 
     @Override
