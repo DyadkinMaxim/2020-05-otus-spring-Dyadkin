@@ -2,6 +2,7 @@ package com.books.books.models;
 
 
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
@@ -29,6 +30,7 @@ public class Book {
     private Style style;
 
     @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "book")
+    @DBRef
     private List<Comment> comment;
 
     @Override

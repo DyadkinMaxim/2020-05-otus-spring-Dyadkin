@@ -3,6 +3,8 @@ package com.books.books.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
@@ -14,6 +16,10 @@ import java.util.List;
 @Document("styles")
 public class Style {
 
+    public Style(String styleName) {
+        this.styleName = styleName;
+    }
+
     @Id
     private long id;
 
@@ -21,6 +27,7 @@ public class Style {
     private String styleName;
 
     @OneToMany(targetEntity = Book.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "style")
+    @DBRef
     private List<Book> styleBooks;
 
     @Override
@@ -28,7 +35,6 @@ public class Style {
         return "Style{" +
                 "ID: "+ id +
                 "styleName: " + styleName +
-                "styleBooks: " + styleBooks +
                 "}";
     }
 }

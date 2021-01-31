@@ -4,6 +4,7 @@ package com.books.books.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
@@ -15,6 +16,10 @@ import java.util.List;
 @Document("authors")
 public class Author {
 
+    public Author(String authorName){
+        this.authorName = authorName;
+    }
+
     @Id
     private long id;
 
@@ -22,6 +27,7 @@ public class Author {
     private String authorName;
 
     @OneToMany(targetEntity = Book.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "author")
+    @DBRef
     private List<Book> authorBooks;
 
     @Override
