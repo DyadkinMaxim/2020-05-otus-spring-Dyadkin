@@ -1,10 +1,8 @@
 package com.books.books.service;
 
-import com.books.books.models.Author;
 import com.books.books.models.Book;
-import com.books.books.models.Comment;
 import com.books.books.models.Style;
-import com.books.books.repositories.StyleRepositoryJpa;
+import com.books.books.repositoriesSpringDataJPA.StyleRepository;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
@@ -18,10 +16,10 @@ import java.util.Scanner;
 @ShellComponent
 public class StyleServiceImpl implements StyleService {
 
-    private final StyleRepositoryJpa styleRepository;
+    private final StyleRepository styleRepository;
     private final BookService bookService;
 
-    public StyleServiceImpl(StyleRepositoryJpa styleRepository, BookService bookService) {
+    public StyleServiceImpl(StyleRepository styleRepository, BookService bookService) {
         this.styleRepository = styleRepository;
         this.bookService = bookService;
     }
@@ -30,7 +28,7 @@ public class StyleServiceImpl implements StyleService {
     @Transactional
     @ShellMethod(value = "Print all styles", key = {"s1"})
     public void printStyles() {
-        List<Style> styles = styleRepository.findAll();
+        List<Style> styles = (List<Style>) styleRepository.findAll();
         for (Style style : styles) {
             String styleText = " ID: " + style.getId() + "; \n Жанр: " + style.getStyleName();
             System.out.println(styleText);
@@ -70,18 +68,15 @@ public class StyleServiceImpl implements StyleService {
             System.out.println("Жанр не может быть пустым");
             return;
         }
-        if (!Objects.equals(styleRepository.findByName(styleName), null)) {
+        if (!Objects.equals(styleRepository.findByStyleNameContains(styleName), null)) {
             System.out.println("Такой жанр уже существует");
             return;
         }
         Style style = new Style();
         style.setStyleName(styleName);
-        long styleId = styleRepository.save(style).orElse(0L);
-        if (styleId != 0) {
-            Style newStyle = styleRepository.findById(styleId).orElse(new Style());
-            System.out.println("Добавлен жанр: \n" +
-                    " ID: " + newStyle.getId() + "; \n Жанр: " + newStyle.getStyleName());
-        }
+        styleRepository.save(style);
+        System.out.println("Добавлен жанр: \n" +
+                " ID: " + style.getId() + "; \n Жанр: " + style.getStyleName());
     }
 
     @Override
@@ -129,9 +124,14 @@ public class StyleServiceImpl implements StyleService {
         }
         Style style = styleRepository.findById(styleId).orElse(new Style());
         if (!(style.getId() == 0)) {
-            styleRepository.deleteById(styleId);
+            if(style.getStyleBooks().isEmpty()) {
+                styleRepository.deleteById(styleId);
+            }
+            else{
+                System.out.println("Удалить жанр невозможно - сначала удалите все книги этого жанра");
+            }
         } else {
-            System.out.println("Не найдено автора по id: " + styleId);
+            System.out.println("Не найдено жанра по id: " + styleId);
         }
 
     }
