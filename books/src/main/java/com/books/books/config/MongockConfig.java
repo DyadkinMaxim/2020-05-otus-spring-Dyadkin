@@ -1,5 +1,6 @@
-package com.books.books.mongock.changelog;
+package com.books.books.config;
 
+import com.books.books.events.MongoBookCascadeSaveEventsListener;
 import com.github.cloudyrock.mongock.SpringMongock;
 import com.github.cloudyrock.mongock.SpringMongockBuilder;
 import com.mongodb.MongoClient;
@@ -14,4 +15,4 @@ public class MongockConfig {
             return new SpringMongockBuilder(mongoClient, "mongoBooks", "com.books.books.mongock.changelog")
                     .build();
         }
-    }
+}

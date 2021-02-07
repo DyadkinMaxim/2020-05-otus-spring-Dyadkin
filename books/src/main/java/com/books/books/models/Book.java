@@ -18,18 +18,12 @@ public class Book {
     @Id
     private long id;
 
-    @Column(name = "book", nullable = false)
     private String bookName;
 
-    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "author_id", nullable = false)
     private Author author;
 
-    @ManyToOne(targetEntity = Style.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "style_id", nullable = false)
     private Style style;
 
-    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "book")
     @DBRef
     private List<Comment> comment;
 

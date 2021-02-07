@@ -23,10 +23,8 @@ public class Author {
     @Id
     private long id;
 
-    @Column(name = "author", nullable = false)
     private String authorName;
 
-    @OneToMany(targetEntity = Book.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "author")
     @DBRef
     private List<Book> authorBooks;
 

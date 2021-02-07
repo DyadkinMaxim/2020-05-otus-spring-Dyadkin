@@ -25,36 +25,36 @@ public class InitMongoDBDataChangeLog {
     private Set<Author> authors = new HashSet<>();
     private Set<Style> styles = new HashSet<>();
 
-    public void initAuthors(){
-        authors.add(new Author(1,"Джек Лондон", null));
+    public void initAuthors() {
+        authors.add(new Author(1, "Джек Лондон", null));
         authors.add(new Author(2, "Лев Толстой", null));
         authors.add(new Author(3, "Уильям Шекспир", null));
         authors.add(new Author(4, "Чарльз Дикенс", null));
         authors.add(new Author(5, "Александр Пушкин", null));
     }
 
-    public void initStyles(){
-        styles.add(new Style(1,"приключения", null));
-        styles.add(new Style(2,"роман", null));
+    public void initStyles() {
+        styles.add(new Style(1, "приключения", null));
+        styles.add(new Style(2, "роман", null));
         styles.add(new Style(3, "трагедия", null));
-        styles.add(new Style(4,"поэма", null));
+        styles.add(new Style(4, "поэма", null));
     }
 
     @ChangeSet(order = "001", id = "dropDB", author = "Dyadkin Maxim", runAlways = true)
-    public void dropDB(MongoDatabase database){
+    public void dropDB(MongoDatabase database) {
         database.drop();
     }
 
     @ChangeSet(order = "002", id = "initAuthors", author = "Dyadkin Maxim", runAlways = true)
-    public void saveAuthors(MongoTemplate template, Set<Author> authors){
-       for(Author author : authors){
-           template.save(author);
-       }
+    public void saveAuthors(MongoTemplate template, Set<Author> authors) {
+        for (Author author : authors) {
+            template.save(author);
+        }
     }
 
     @ChangeSet(order = "003", id = "initStyles", author = "Dyadkin Maxim", runAlways = true)
-    public void saveStyles(MongoTemplate template, Set<Style> styles){
-        for(Style style : styles){
+    public void saveStyles(MongoTemplate template, Set<Style> styles) {
+        for (Style style : styles) {
             template.save(style);
         }
     }
@@ -62,10 +62,10 @@ public class InitMongoDBDataChangeLog {
     @ChangeSet(order = "002", id = "initBooks", author = "Dyadkin Maxim", runAlways = true)
     public void initBooks(MongoTemplate template) {
         Book book1 = new Book(1,
-                                "Белый клык",
-                                new Author(1, "Джек Лондон", null),
-                                new Style(1, "приключения", null),
-                                null);
+                "Белый клык",
+                new Author(1, "Джек Лондон", null),
+                new Style(1, "приключения", null),
+                null);
         template.save(new Comment(1, "гуд", book1));
         template.save(new Comment(2, "не гуд", book1));
         template.save(book1);

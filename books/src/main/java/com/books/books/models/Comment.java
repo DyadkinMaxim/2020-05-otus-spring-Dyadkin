@@ -15,12 +15,8 @@ public class Comment {
     @Id
     private long id;
 
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "comment", nullable = false)
     private String commentText;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn
     private Book book;
 
     @Override

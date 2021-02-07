@@ -23,10 +23,8 @@ public class Style {
     @Id
     private long id;
 
-    @Column(name = "style", nullable = false)
     private String styleName;
 
-    @OneToMany(targetEntity = Book.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "style")
     @DBRef
     private List<Book> styleBooks;
 
