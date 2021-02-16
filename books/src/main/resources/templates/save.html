@@ -23,8 +23,6 @@
     </style>
 </head>
 <body>
-
-<!-- Person edition -->
 <form id="edit-form" th:action="@{/save}" th:method="post" action="save.html">
     <h1>New book:</h1>
     <div class="row">
@@ -36,8 +34,12 @@
         <input id="Author-input" name="authorName" type="text" th:value="${authorName}"/>
     </div>
     <div class="row">
-        <label for="styleName-input">bookName:</label>
+        <label for="styleName-input">Style:</label>
         <input id="styleName-input" name="styleName" type="text" th:value="${styleName}"/>
+    </div>
+    <div class="row">
+        <label for="comment-input">Comment:</label>
+        <input id="comment-input" name="commentText" type="text" th:value="${commentText}"/>
     </div>
     <div class="row">
         <button type="submit">Save</button>

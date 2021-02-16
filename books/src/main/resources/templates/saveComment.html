@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Edit book name</title>
+    <title>Add new Comment</title>
     <style type="text/css">
         body {
             padding: 50px;
@@ -23,15 +23,15 @@
     </style>
 </head>
 <body>
-<form id="edit-form" th:action="@{/edit(id=${book.id})}" th:method="post" action="edit.html">
-    <h1>Book Info:</h1>
+<form id="edit-form" th:action="@{/saveCommentSingle}" th:method="post" action="saveComment.html">
+    <h1>New comment:</h1>
     <div class="row">
-        <label for="id-input">ID:</label>
-        <input id="id-input" type="text" readonly="readonly" th:value="${book.id}"/>
+        <label for="commentText-input">commentText:</label>
+        <input id="commentText-input" name="commentText" type="text" th:value="${commentText}"/>
     </div>
     <div class="row">
-        <label for="bookName-input">bookName:</label>
-        <input id="bookName-input" name="bookName" type="text" th:value="${book.bookName}"/>
+        <label for="bookId-input">bookId:</label>
+        <input id="bookId-input" name="bookId" type="text" th:value="${bookId}"/>
     </div>
     <div class="row">
         <button type="submit">Save</button>
