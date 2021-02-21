@@ -1,10 +1,14 @@
 package com.books.books.rest;
 
+import com.books.books.MVCservice.BookService;
+import com.books.books.MVCservice.BookServiceImpl;
 import com.books.books.models.Author;
 import com.books.books.models.Book;
 import com.books.books.models.Comment;
 import com.books.books.models.Style;
+import com.books.books.repositoriesSpringDataJPA.AuthorRepository;
 import com.books.books.repositoriesSpringDataJPA.BookRepository;
+import com.books.books.repositoriesSpringDataJPA.StyleRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,16 +18,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 public class BookController {
 
     private final BookRepository bookRepository;
+    private final StyleRepository styleRepository;
+    private final AuthorRepository authorRepository;
     private final CommentController commentController;
+    private final BookServiceImpl bookServiceImpl;
 
-    public BookController(BookRepository repository, CommentController commentController) {
+    public BookController(BookRepository repository,
+                          StyleRepository styleRepository,
+                          AuthorRepository authorRepository,
+                          CommentController commentController,
+                          BookServiceImpl bookServiceImpl) {
         this.bookRepository = repository;
         this.commentController = commentController;
+        this.styleRepository = styleRepository;
+        this.authorRepository = authorRepository;
+        this.bookServiceImpl = bookServiceImpl;
     }
 
     @GetMapping("/")
@@ -37,7 +52,12 @@ public class BookController {
     @ExceptionHandler(NotFoundException.class)
     public String editBook(@RequestParam("id") long id, Model model) {
         Book book = bookRepository.findById(id).orElseThrow(NotFoundException::new);
+        List<Style> styles = (List<Style>) styleRepository.findAll();
+        List<Author> authors = (List<Author>) authorRepository.findAll();
+        Author author = new Author();
         model.addAttribute("book", book);
+        model.addAttribute("styles", styles);
+        model.addAttribute("authors", authors);
         return "edit";
     }
 
@@ -50,43 +70,31 @@ public class BookController {
     @PostMapping("/edit")
     @ExceptionHandler(NotFoundException.class)
     public String updateBook(
-            Book book,
-            Model model
+            Book book
     ) {
-        Book savedBook = bookRepository.findById(book.getId()).orElseThrow(NotFoundException::new);
-        savedBook.setBookName(book.getBookName());
-        Book saved = bookRepository.save(savedBook);
-        model.addAttribute(saved);
+      bookServiceImpl.update(book);
         return "redirect:/";
     }
 
     @GetMapping("/save")
-    public String toSave() {
+    public String toSave(Model model) {
+        List<Style> styles = (List<Style>) styleRepository.findAll();
+        List<Author> authors = (List<Author>) authorRepository.findAll();
+        Book newBook = new Book();
+        Comment newComment = new Comment();
+        model.addAttribute("book", newBook);
+        model.addAttribute("comment", newComment);
+        model.addAttribute("styles", styles);
+        model.addAttribute("authors", authors);
         return "save";
     }
 
     @PostMapping("/save")
     public String saveBook(
-            String authorName,
-            String styleName,
-            String bookName,
-            String commentText,
-            Model model
+            Book book,
+            Comment comment
     ) {
-        Book book = new Book();
-        Author author = new Author();
-        Style style = new Style();
-        Comment comment = new Comment();
-        author.setAuthorName(authorName);
-        style.setStyleName(styleName);
-        comment.setCommentText(commentText);
-        book.setAuthor(author);
-        book.setStyle(style);
-        book.setBookName(bookName);
-        book.setComment(Arrays.asList(comment));
-        Book saved = bookRepository.save(book);
-        commentController.saveCommentInBook(commentText, saved, model);
-        model.addAttribute(saved);
+        bookServiceImpl.save(book, comment);
         return "redirect:/";
     }
 }

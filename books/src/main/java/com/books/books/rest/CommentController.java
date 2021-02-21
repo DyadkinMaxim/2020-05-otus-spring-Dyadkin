@@ -1,9 +1,7 @@
 package com.books.books.rest;
 
-import com.books.books.models.Book;
+import com.books.books.MVCservice.CommentService;
 import com.books.books.models.Comment;
-import com.books.books.repositoriesSpringDataJPA.BookRepository;
-import com.books.books.repositoriesSpringDataJPA.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,48 +11,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class CommentController {
-    private final CommentRepository commentRepository;
-    private final BookRepository bookRepository;
+    private final CommentService commentService;
+
     @Autowired
-    public CommentController(CommentRepository commentRepository, BookRepository bookRepository) {
-        this.commentRepository = commentRepository;
-        this.bookRepository = bookRepository;
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
     }
 
-    @GetMapping("/saveCommentSingle")
-    public String toSave() {
+    @GetMapping("/saveComment")
+    public String toSave(Model model) {
+        Comment comment = new Comment();
+        model.addAttribute(comment);
         return "saveComment";
     }
 
-    @PostMapping("/saveCommentSingle")
+    @PostMapping("/saveComment")
     @ExceptionHandler(NotFoundException.class)
-    public String saveCommentSingle(
-            String commentText,
-            long bookId,
-            Model model
+    public String saveComment(
+            Comment comment,
+            long bookId
     ) {
-        Book book = bookRepository.findById(bookId).orElseThrow(NotFoundException::new);
-        Comment comment = new Comment();
-        comment.setCommentText(commentText);
-        comment.setBook(book);
-        commentRepository.save(comment);
-        model.addAttribute(comment);
+        commentService.saveComment(comment, bookId);
         return "redirect:/";
     }
-
-    @PostMapping("/saveCommentInBook")
-    public String saveCommentInBook(
-            String commentText,
-            Book book,
-            Model model
-    ) {
-
-        Comment comment = new Comment();
-        comment.setCommentText(commentText);
-        comment.setBook(book);
-        commentRepository.save(comment);
-        model.addAttribute(comment);
-        return "redirect:/";
-    }
-
 }

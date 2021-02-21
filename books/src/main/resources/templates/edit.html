@@ -25,13 +25,25 @@
 <body>
 <form id="edit-form" th:action="@{/edit(id=${book.id})}" th:method="post" action="edit.html">
     <h1>Book Info:</h1>
-    <div class="row">
+    <div class="ID-row">
         <label for="id-input">ID:</label>
         <input id="id-input" type="text" readonly="readonly" th:value="${book.id}"/>
     </div>
-    <div class="row">
+    <div class="bookName-row">
         <label for="bookName-input">bookName:</label>
         <input id="bookName-input" name="bookName" type="text" th:value="${book.bookName}"/>
+    </div>
+    <div class="authorName">
+        <label for="authorName">authorName:</label>
+        <select class="authorName" th:field="${book.author.authorName}"  id="authorName">
+            <option th:each = "author : ${authors}" th:value="${author.authorName}" th:text="${author.authorName}"></option>
+        </select>
+    </div>
+    <div class="styleName">
+        <label for="styleName">styleName:</label>
+        <select class="styleName" th:field="${book.style.styleName}"  id="styleName">
+            <option th:each = "style : ${styles}" th:value="${style.styleName}" th:text="${style.styleName}"></option>
+        </select>
     </div>
     <div class="row">
         <button type="submit">Save</button>

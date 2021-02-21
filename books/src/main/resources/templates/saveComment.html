@@ -23,11 +23,11 @@
     </style>
 </head>
 <body>
-<form id="edit-form" th:action="@{/saveCommentSingle}" th:method="post" action="saveComment.html">
+<form id="edit-form" th:action="@{/saveComment}" th:method="post" action="saveComment.html">
     <h1>New comment:</h1>
     <div class="row">
         <label for="commentText-input">commentText:</label>
-        <input id="commentText-input" name="commentText" type="text" th:value="${commentText}"/>
+        <input id="commentText-input" name="commentText" type="text" th:value="${comment.commentText}"/>
     </div>
     <div class="row">
         <label for="bookId-input">bookId:</label>

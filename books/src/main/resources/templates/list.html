@@ -11,6 +11,7 @@
         .books, .books td {
             border: 1px solid lightgray;
             padding: 5px;
+            word-break: break-all;
         }
 
         .btn {
@@ -45,7 +46,7 @@
         <table class = "comments">
           <tbody>
           <tr th:each = "comment : ${book.comment}">
-              <td th:text="${comment.commentText}"></td>
+              <td th:text="${comment.commentText}" width="300p"></td>
           </tr>
           </tbody>
         </table>
@@ -61,6 +62,6 @@
 </table>
 <a th:href="@{/save}" href="save.html">Добавить новую книгу</a>
 <br/>
-<a th:href="@{/saveCommentSingle}" href="saveComment.html">Добавить новый комментарий</a>
+<a th:href="@{/saveComment}" href="saveComment.html">Добавить новый комментарий</a>
 </body>
 </html>

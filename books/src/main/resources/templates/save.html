@@ -29,17 +29,21 @@
         <label for="bookName-input">bookName:</label>
         <input id="bookName-input" name="bookName" type="text" th:value="${bookName}"/>
     </div>
-    <div class="row">
-        <label for="Author-input">Author:</label>
-        <input id="Author-input" name="authorName" type="text" th:value="${authorName}"/>
+    <div class="author">
+        <label for="author">Author:</label>
+        <select class="author" th:field="${book.author.authorName}"  id="author">
+            <option th:each = "author : ${authors}" th:value="${author.authorName}" th:text="${author.authorName}"></option>
+        </select>
     </div>
-    <div class="row">
-        <label for="styleName-input">Style:</label>
-        <input id="styleName-input" name="styleName" type="text" th:value="${styleName}"/>
+    <div class="style">
+        <label for="style">Style:</label>
+        <select class="style" th:field="${book.style.styleName}"  id="style">
+            <option th:each = "style : ${styles}" th:value="${style.styleName}" th:text="${style.styleName}"></option>
+        </select>
     </div>
     <div class="row">
         <label for="comment-input">Comment:</label>
-        <input id="comment-input" name="commentText" type="text" th:value="${commentText}"/>
+        <input id="comment-input" name="commentText" type="text" th:value="${comment.commentText}"/>
     </div>
     <div class="row">
         <button type="submit">Save</button>
