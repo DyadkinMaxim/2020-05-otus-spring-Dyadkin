@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all books</title>
+    <style type="text/css">
+        body {
+            padding: 20px;
+        }
+
+        .books, .books td {
+            border: 1px solid lightgray;
+            padding: 5px;
+            word-break: break-all;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #8C959D;
+            color: #fff;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+<h1>Books:</h1>
+<table class="books">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Author</th>
+        <th>Style</th>
+        <th>Comment</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each = "book : ${books}">
+        <td th:text="${book.id}"></td>
+        <td th:text="${book.bookName}"></td>
+        <td th:text="${book.author.authorName}"></td>
+        <td th:text="${book.style.styleName}"></td>
+        <td>
+        <table class = "comments">
+          <tbody>
+          <tr th:each = "comment : ${book.comment}">
+              <td th:text="${comment.commentText}" width="300p"></td>
+          </tr>
+          </tbody>
+        </table>
+        </td>
+        <td>
+            <a th:href="@{/edit(id=${book.id})}" href="edit.html">Edit</a>
+        </td>
+        <td>
+            <a th:href="@{/delete(id=${book.id})}">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a th:href="@{/save}" href="save.html">Добавить новую книгу</a>
+<br/>
+<a th:href="@{/saveComment}" href="saveComment.html">Добавить новый комментарий</a>
+</body>
+</html>
