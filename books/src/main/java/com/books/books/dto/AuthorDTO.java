@@ -1,29 +1,24 @@
 package com.books.books.dto;
 
+import com.books.books.models.Author;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuthorDTO {
 
     private long id;
+    private String authorName;
 
-    private String name;
-
-    public AuthorDTO(long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public static AuthorDTO toDTO(Author author) {
+        return new AuthorDTO(
+                author.getId(),
+                author.getAuthorName()
+        );
     }
 }

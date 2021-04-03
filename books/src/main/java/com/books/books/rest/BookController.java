@@ -1,26 +1,17 @@
 package com.books.books.rest;
 
-import com.books.books.MVCservice.BookService;
 import com.books.books.MVCservice.BookServiceImpl;
-import com.books.books.models.Author;
+import com.books.books.dto.BookDTO;
 import com.books.books.models.Book;
-import com.books.books.models.Comment;
-import com.books.books.models.Style;
 import com.books.books.repositoriesSpringDataJPA.AuthorRepository;
 import com.books.books.repositoriesSpringDataJPA.BookRepository;
 import com.books.books.repositoriesSpringDataJPA.StyleRepository;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@Controller
+@RestController
 public class BookController {
 
     private final BookRepository bookRepository;
@@ -41,60 +32,39 @@ public class BookController {
         this.bookServiceImpl = bookServiceImpl;
     }
 
-    @GetMapping("/")
-    public String listBooks(Model model) {
-        List<Book> books = (List<Book>) bookRepository.findAll();
-        model.addAttribute("books", books);
-        return "list";
+    @GetMapping("/api/books")
+    public List<BookDTO> getAllBooks() {
+        return bookRepository.findAll().stream().map(BookDTO::toDTO)
+                .collect(Collectors.toList());
     }
 
-    @GetMapping("/edit")
-    @ExceptionHandler(NotFoundException.class)
-    public String editBook(@RequestParam("id") long id, Model model) {
+    @GetMapping("/api/books/{id}")
+    public BookDTO updateBook(@PathVariable(value = "id") long id) {
         Book book = bookRepository.findById(id).orElseThrow(NotFoundException::new);
-        List<Style> styles = (List<Style>) styleRepository.findAll();
-        List<Author> authors = (List<Author>) authorRepository.findAll();
-        Author author = new Author();
-        model.addAttribute("book", book);
-        model.addAttribute("styles", styles);
-        model.addAttribute("authors", authors);
-        return "edit";
+        BookDTO bookDTO = BookDTO.toDTO(book);
+        return bookDTO;
     }
 
-    @GetMapping("/delete")
-    public String deleteBook(@RequestParam("id") long id, Model model) {
+    @DeleteMapping("/api/books/{id}")
+    public void deleteBook(@PathVariable(value = "id") long id) {
         bookRepository.deleteById(id);
-        return "redirect:/";
     }
 
-    @PostMapping("/edit")
+    @PutMapping("/api/books/{id}")
     @ExceptionHandler(NotFoundException.class)
-    public String updateBook(
-            Book book
+    public void updateBook(
+            @RequestBody BookDTO bookDTO
     ) {
-      bookServiceImpl.update(book);
-        return "redirect:/";
+        Book book = BookDTO.toBook(bookDTO);
+        bookServiceImpl.update(book);
     }
 
-    @GetMapping("/save")
-    public String toSave(Model model) {
-        List<Style> styles = (List<Style>) styleRepository.findAll();
-        List<Author> authors = (List<Author>) authorRepository.findAll();
-        Book newBook = new Book();
-        Comment newComment = new Comment();
-        model.addAttribute("book", newBook);
-        model.addAttribute("comment", newComment);
-        model.addAttribute("styles", styles);
-        model.addAttribute("authors", authors);
-        return "save";
-    }
 
-    @PostMapping("/save")
-    public String saveBook(
-            Book book,
-            Comment comment
+    @PostMapping("/api/books/newBook")
+    public void saveBook(
+            @RequestBody BookDTO bookDTO
     ) {
-        bookServiceImpl.save(book, comment);
-        return "redirect:/";
+        Book newBook = BookDTO.toBook(bookDTO);
+        bookServiceImpl.save(newBook, newBook.getComment());
     }
 }
