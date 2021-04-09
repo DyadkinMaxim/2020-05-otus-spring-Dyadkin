@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface BookService {
 
-    void save(Book book, Comment comment);
+    void save(Book book, List<Comment> comments);
 
     void update(Book book);
 }

@@ -11,10 +11,8 @@ import com.books.books.repositoriesSpringDataJPA.StyleRepository;
 import com.books.books.rest.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.List;
 
 @Service
 public class BookServiceImpl implements  BookService{
@@ -36,16 +34,18 @@ public class BookServiceImpl implements  BookService{
         this.styleRepository = styeRepository;
     }
 
+
     @Transactional
-    public void save(Book book, Comment comment){
-        comment.setBook(book);
+    public void save(Book book, List<Comment> comments){
+        for(Comment comment : comments) {
+            comment.setBook(book);
+        }
         existingAuthor = authorRepository.findByAuthorNameContains(book.getAuthor().getAuthorName());
         existingStyle = styleRepository.findByStyleNameContains(book.getStyle().getStyleName());
         book.setAuthor(existingAuthor);
         book.setStyle(existingStyle);
-        book.setComment(Arrays.asList(comment));
+        book.setComment(comments);
         bookRepository.save(book);
-//        commentRepository.save(comment);
     }
 
     @Transactional

@@ -2,66 +2,264 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <meta name="keywords" th:content="${keywords}"/>
     <title>List of all books</title>
     <style type="text/css">
         body {
-            padding: 20px;
+            padding: 50px;
         }
 
         .books, .books td {
             border: 1px solid lightgray;
             padding: 5px;
-            word-break: break-all;
-        }
-
-        .btn {
-            display: inline-block;
-            background: #8C959D;
-            color: #fff;
-            padding: 1rem 1.5rem;
-            text-decoration: none;
-            border-radius: 3px;
         }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-<h1>Books:</h1>
-<table class="books">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Author</th>
-        <th>Style</th>
-        <th>Comment</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each = "book : ${books}">
-        <td th:text="${book.id}"></td>
-        <td th:text="${book.bookName}"></td>
-        <td th:text="${book.author.authorName}"></td>
-        <td th:text="${book.style.styleName}"></td>
-        <td>
-        <table class = "comments">
-          <tbody>
-          <tr th:each = "comment : ${book.comment}">
-              <td th:text="${comment.commentText}" width="300p"></td>
-          </tr>
-          </tbody>
-        </table>
-        </td>
-        <td>
-            <a th:href="@{/edit(id=${book.id})}" href="edit.html">Edit</a>
-        </td>
-        <td>
-            <a th:href="@{/delete(id=${book.id})}">Delete</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<a th:href="@{/save}" href="save.html">Добавить новую книгу</a>
-<br/>
-<a th:href="@{/saveComment}" href="saveComment.html">Добавить новый комментарий</a>
+<div></div>
+<script>
+    jQuery(document).ready(list());
+    function list() {
+        $.get('/api/books').done(function (books) {
+            $('div').append('<h1>Books:</h1>' +
+                '<table class="books">\n' +
+                '    <thead>\n' +
+                '    <tr>\n' +
+                '        <th>ID</th>\n' +
+                '        <th>BookName</th>\n' +
+                '        <th>Author</th>\n' +
+                '        <th>Style</th>\n' +
+                '        <th>Comments</th>\n' +
+                '    </tr>\n' +
+                '    </thead>\n' +
+                '    <tbody>\n' +
+                '    </tbody>' +
+                '    </table>'
+            );
+            books.forEach(function(book) {
+                let id = book.id;
+                $('tbody').append(`
+                    <tr>
+                        <td>${book.id}</td>
+                        <td>${book.bookName}</td>
+                        <td>${book.authorName}</td>
+                        <td>${book.styleName}</td>
+                        <td>
+                            <ul id = "${id}">
+                            </ul>
+                        </td>
+                        <td><button onClick="edit(${book.id})">Edit</button></td>
+                         <td><button onClick="remove(${book.id})">Delete</button></td>
+                    </tr>
+                `);
+            })
+            $('div').append('<button id = "submit" type="submit" onClick="getSave()">Add book</button> <br/>');
+            $('div').append('<button id = "submit" type="submit" onClick="getComment()">Add comment</button>');
+            comments(books);
+        })
+    }
+
+    function comments(books) {
+        books.forEach(function (book) {
+            let id = book.id;
+            let comments = book.comments;
+            comments.forEach(function (commentText) {
+                let li = document.createElement('li');
+                li.innerText = commentText;
+                $('#'+id).after(li);
+                }
+            )
+        })
+    }
+
+    function edit(id) {
+        $.get('/api/books/' + id).done(function (bookDTO) {
+
+            document.body.innerHTML = '<div></div>'
+            $('div').append(`
+                <a onclick = "list()" href = ''>К списку книг</a>
+                <h1>Book Info:</h1>
+                <div>
+                    <label>ID:</label>
+                    <input id="id-input" type="text"  value = ${bookDTO.id} readonly="readonly"/>
+                </div>
+                <div>
+                    <label>BookName:</label>
+                    <input id="bookName-input" type="text"  value = "${bookDTO.bookName}" />
+                </div>
+                <label for="authorName">authorName:</label>
+            <select id="authorName"></select>
+            <br/>
+             <label for="styleName">styleName:</label>
+            <select id="styleName"></select>
+            <div class="submit">
+            <button id = "submit" type="submit" onClick="saveEdit()">Save</button>
+             </div>
+                `)
+            $.get('/api/authors').done(function (authors) {
+                let i;
+
+                for (i = 0; i < authors.length; i++) {
+                    $('#authorName').append("<option>" + authors[i].authorName + "</option>");
+                }
+            })
+            $.get('/api/styles').done(function (styles) {
+                let i;
+
+                for (i = 0; i < styles.length; i++) {
+                    $('#styleName').append("<option>" + styles[i].styleName + "</option>");
+                }
+                $('#styleName').append("</select>");
+            })
+        })
+    }
+
+    function saveEdit() {
+            let authorName = $( "#authorName option:selected" ).text();
+            let styleName = $( "#styleName option:selected" ).text();
+        let id = $('#id-input').val();
+        let bookName = $('#bookName-input').val();
+            let bookDTO = {
+                "id": id,
+                "bookName": bookName,
+                "authorName": authorName,
+                "styleName": styleName,
+                "comments": null
+            }
+        $.ajax({
+            url : '/api/books/' + id,
+            type : 'PUT',
+            contentType : 'application/json',
+            data : JSON.stringify(bookDTO),
+            success : function() {
+                document.body.innerHTML = '<div></div>'
+                list()
+            }
+        })
+        }
+
+    function remove(id) {
+        console.log(JSON.stringify(id));
+            $.ajax({
+                url : '/api/books/' + id,
+                type : 'DELETE',
+                contentType : 'application/json',
+                success : function() {
+                    document.body.innerHTML = '<div></div>'
+                    list()
+                }
+            })
+    }
+
+    function getSave() {
+            document.body.innerHTML = '<div></div>'
+            $('div').append(`
+                <a onclick = "list()" href = ''>К списку книг</a>
+                <h1>Add new book:</h1>
+                <div>
+                    <label>BookName:</label>
+                    <input id="bookName-input" type="text"/>
+                </div>
+                <label for="authorName">authorName:</label>
+            <select id="authorName"></select>
+            <br/>
+             <label for="styleName">styleName:</label>
+            <select id="styleName"></select>
+             <div>
+                    <label>Comment:</label>
+                    <input id="comment-input" type="text"/>
+                </div>
+            <div class="submit">
+            <button id = "submit" type="submit" onClick="postSave()">Save</button>
+             </div>
+                `)
+            $.get('/api/authors').done(function (authors) {
+                let i;
+
+                for (i = 0; i < authors.length; i++) {
+                    $('#authorName').append("<option>" + authors[i].authorName + "</option>");
+                }
+            })
+            $.get('/api/styles').done(function (styles) {
+                let i;
+
+                for (i = 0; i < styles.length; i++) {
+                    $('#styleName').append("<option>" + styles[i].styleName + "</option>");
+                }
+                $('#styleName').append("</select>");
+            })
+    }
+
+    function postSave() {
+        let id = $('#id-input').val();
+        let bookName = $('#bookName-input').val();
+        let authorName = $( "#authorName option:selected" ).text();
+        let styleName = $( "#styleName option:selected" ).text();
+        let comment = $('#comment-input').val();
+        let comments  = [];
+        comments.push(comment);
+        let bookDTO = {};
+        bookDTO.id = id;
+        bookDTO.bookName = bookName;
+        bookDTO.authorName = authorName;
+        bookDTO.styleName = styleName;
+        bookDTO.comments = comments;
+        $.ajax({
+            url : '/api/books/newBook',
+            type : "POST",
+            contentType : 'application/json',
+            data : JSON.stringify(bookDTO),
+            success : function() {
+                document.body.innerHTML = '<div></div>'
+                list()
+            }
+        })
+    }
+
+    function getComment() {
+        document.body.innerHTML = '<div></div>'
+        $('div').append(`
+                <a onclick = "list()" href = ''>К списку книг</a>
+                <h1>Add new Comment:</h1>
+                   <label for="bookId">Book ID:</label>
+                    <select id="bookId"></select>
+                <div>
+                    <label>CommentText:</label>
+                    <input id="commentText" type="text"/>
+                </div>
+            <div class="submit">
+            <button id = "submit" type="submit" onClick="postComment()">Save</button>
+             </div>
+                `)
+        $.get('/api/books').done(function (books) {
+            let i;
+            for (i = 0; i < books.length; i++) {
+                $('#bookId').append("<option>" + books[i].id + "</option>");
+            }
+        })
+    }
+
+    function postComment() {
+        let bookId = $('#bookId').val();
+        let commentText = $('#commentText').val();
+        let commentDTO = {};
+        commentDTO.bookId = bookId;
+        commentDTO.commentText = commentText;
+        console.log(bookId);
+        console.log(commentText);
+        $.ajax({
+            url : '/api/comments/newComment',
+            type : "POST",
+            contentType : 'application/json',
+            data : JSON.stringify(commentDTO),
+            success : function() {
+                document.body.innerHTML = '<div></div>'
+                list()
+            }
+        })
+    }
+
+</script>
 </body>
 </html>

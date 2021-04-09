@@ -1,5 +1,7 @@
 package com.books.books.dto;
 
+import com.books.books.models.Author;
+import com.books.books.models.Style;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,11 +13,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookDTO {
-
-    private long id = -1;
+public class NewBookDTO {
+    private long id;
     private String bookName;
-    private String authorName;
-    private String styleName;
+    private List<String> authors;
+    private List<String> styles;
     private List<String> comments;
+
 }

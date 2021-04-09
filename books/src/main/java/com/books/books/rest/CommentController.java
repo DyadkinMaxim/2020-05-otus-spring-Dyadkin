@@ -1,37 +1,36 @@
 package com.books.books.rest;
 
 import com.books.books.MVCservice.CommentService;
+import com.books.books.dto.CommentDTO;
+import com.books.books.models.Book;
 import com.books.books.models.Comment;
+import com.books.books.repositoriesSpringDataJPA.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class CommentController {
     private final CommentService commentService;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public CommentController(CommentService commentService) {
+    public CommentController(CommentService commentService, BookRepository bookRepository) {
         this.commentService = commentService;
+        this.bookRepository = bookRepository;
     }
 
-    @GetMapping("/saveComment")
-    public String toSave(Model model) {
-        Comment comment = new Comment();
-        model.addAttribute(comment);
-        return "saveComment";
-    }
-
-    @PostMapping("/saveComment")
+    @PostMapping("/api/comments/newComment")
     @ExceptionHandler(NotFoundException.class)
-    public String saveComment(
-            Comment comment,
-            long bookId
+    public void saveComment(
+            @RequestBody CommentDTO commentDTO
     ) {
-        commentService.saveComment(comment, bookId);
-        return "redirect:/";
+        Book commentBook = bookRepository.findById(commentDTO.getBookId()).orElse(new Book());
+        Comment comment = new Comment();
+        comment.setCommentText(commentDTO.getCommentText());
+        comment.setBook(commentBook);
+        commentService.saveComment(comment, commentDTO.getBookId());
     }
 }

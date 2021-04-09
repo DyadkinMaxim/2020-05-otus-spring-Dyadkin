@@ -1,12 +1,15 @@
 package com.books.books.models;
 
 
+import com.books.books.dto.BookDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -36,6 +39,7 @@ public class Book {
     @JoinColumn(name = "style_id", nullable = false)
     private Style style;
 
+    @Nullable
     @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "book")
     private List<Comment> comment;
 }
