@@ -1,6 +1,7 @@
 package com.books.books.security;
 
 import com.books.books.MVCservice.ClientService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +15,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ClientService clientService;
 
+    @Autowired
     public SecurityConfig(ClientService clientService) {
         this.clientService = clientService;
     }

@@ -1,12 +1,17 @@
 package com.books.books.rest;
 
 import com.books.books.MVCservice.BookServiceImpl;
+import com.books.books.MVCservice.PermissionServiceImpl;
 import com.books.books.converters.BookConverterImpl;
 import com.books.books.dto.BookDTO;
 import com.books.books.models.Book;
 import com.books.books.repositoriesSpringDataJPA.AuthorRepository;
 import com.books.books.repositoriesSpringDataJPA.BookRepository;
 import com.books.books.repositoriesSpringDataJPA.StyleRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -21,19 +26,22 @@ public class BookController {
     private final CommentController commentController;
     private final BookServiceImpl bookServiceImpl;
     private final BookConverterImpl bookConverterImpl;
+    private final PermissionServiceImpl permissionServiceImpl;
 
     public BookController(BookRepository repository,
                           StyleRepository styleRepository,
                           AuthorRepository authorRepository,
                           CommentController commentController,
                           BookServiceImpl bookServiceImpl,
-                          BookConverterImpl bookConverter) {
+                          BookConverterImpl bookConverter,
+                          PermissionServiceImpl permissionServiceImpl) {
         this.bookRepository = repository;
         this.commentController = commentController;
         this.styleRepository = styleRepository;
         this.authorRepository = authorRepository;
         this.bookServiceImpl = bookServiceImpl;
         this.bookConverterImpl = bookConverter;
+        this.permissionServiceImpl = permissionServiceImpl;
     }
 
     @GetMapping("/api/books")
@@ -50,6 +58,7 @@ public class BookController {
     }
 
     @DeleteMapping("/api/books/{id}")
+    @PreAuthorize("hasRole('admin')")
     public void deleteBook(@PathVariable(value = "id") long id) {
         bookRepository.deleteById(id);
     }
@@ -65,10 +74,13 @@ public class BookController {
 
 
     @PostMapping("/api/books/newBook")
+    @PreAuthorize("hasRole('admin')")
     public void saveBook(
             @RequestBody BookDTO bookDTO
     ) {
         Book newBook = bookConverterImpl.toBook(bookDTO);
-        bookServiceImpl.save(newBook, newBook.getComment());
+        Book savedBook = bookServiceImpl.save(newBook, newBook.getComment());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        permissionServiceImpl.addPermissionForUser(savedBook, BasePermission.READ, authentication.getName());
     }
 }

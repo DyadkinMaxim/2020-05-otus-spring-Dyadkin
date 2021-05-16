@@ -36,7 +36,7 @@ public class BookServiceImpl implements  BookService{
 
 
     @Transactional
-    public void save(Book book, List<Comment> comments){
+    public Book save(Book book, List<Comment> comments){
         for(Comment comment : comments) {
             comment.setBook(book);
         }
@@ -45,7 +45,8 @@ public class BookServiceImpl implements  BookService{
         book.setAuthor(existingAuthor);
         book.setStyle(existingStyle);
         book.setComment(comments);
-        bookRepository.save(book);
+        Book newBook = bookRepository.save(book);
+        return newBook;
     }
 
     @Transactional
