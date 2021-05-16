@@ -3,6 +3,7 @@
  drop table if exists books;
  drop table if exists styles;
  drop table if exists authors;
+ drop table if exists clients;
  */
 
 create table styles (
@@ -29,4 +30,12 @@ create table comments (
     COMMENT VARCHAR(255),
     BOOK_ID LONG,
     FOREIGN KEY (BOOK_ID) REFERENCES books(ID)
+);
+
+create table CLIENTS
+(
+    ID      LONG NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    LOGIN VARCHAR(255),
+    PASSWORD VARCHAR(255),
+    ROLE VARCHAR(255)
 );

@@ -27,3 +27,6 @@ insert into comments values (5, 'ай да Пушкин, ай да...', 5);
 insert into comments values (6, 'не читал, но осуждаю', 5);
 insert into comments values (7, 'очень понравилось', 3);
 insert into comments values (8, 'лажа', 4);
+
+--insert into clients
+insert into clients (LOGIN, PASSWORD, ROLE) values ('user', 'password', 'user');
