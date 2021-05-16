@@ -29,4 +29,43 @@ insert into comments values (7, 'очень понравилось', 3);
 insert into comments values (8, 'лажа', 4);
 
 --insert into clients
-insert into clients (LOGIN, PASSWORD, ROLE) values ('user', 'password', 'user');
+insert into clients (LOGIN, PASSWORD, ROLE) values ('user1', 'password', 'user');
+insert into clients (LOGIN, PASSWORD, ROLE) values ('user2', 'password', 'user');
+insert into clients (LOGIN, PASSWORD, ROLE) values ('admin', 'password', 'admin');
+
+--client's list
+INSERT INTO acl_sid (id, principal, sid) VALUES
+(1, 1, 'admin'),
+(2, 1, 'user1'),
+(3, 1, 'user2');
+
+--domain object
+INSERT INTO acl_class (id, class) VALUES
+(1, 'com.books.books.models.Book');
+
+--default book list
+INSERT INTO acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES
+(1, 1, 1, NULL, 3, 0),
+(2, 1, 2, NULL, 3, 0),
+(3, 1, 3, NULL, 3, 0),
+(4, 1, 4, NULL, 3, 0),
+(5, 1, 5, NULL, 3, 0);
+
+--permissions for user1
+INSERT INTO acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES
+(1, 1, 1, 2, 1, 1, 1, 1),
+(2, 2, 2, 2, 1, 1, 1, 1),
+(3, 3, 3, 2, 1, 1, 1, 1);
+
+--permissions for user2
+INSERT INTO acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES
+(4, 4, 4, 3, 1, 1, 1, 1),
+(5, 5, 5, 3, 1, 1, 1, 1);
+
+--permissions for admin
+INSERT INTO acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES
+(6, 1, 6, 1, 1, 1, 1, 1),
+(7, 2, 7, 1, 1, 1, 1, 1),
+(8, 3, 8, 1, 1, 1, 1, 1),
+(9, 4, 9, 1, 1, 1, 1, 1),
+(10, 5, 10, 1, 1, 1, 1, 1);
